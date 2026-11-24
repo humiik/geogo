@@ -15,17 +15,35 @@
   <section class="catalog" aria-labelledby="catalog-title">
     <h2 id="catalog-title">Países del mundo</h2>
     @if (countries().length) {
-    <ion-input
-      class="country-search"
-      label="Buscar por nombre"
-      labelPlacement="stacked"
-      placeholder="Escribe el nombre de un país"
-      fill="outline"
-      inputmode="search"
-      enterkeyhint="search"
-      [value]="search()"
-      (ionInput)="search.set($event.detail.value ?? '')"
-    ></ion-input>
+    <div class="catalog-filters">
+      <ion-input
+        label="Buscar por nombre"
+        labelPlacement="stacked"
+        placeholder="Escribe el nombre de un país"
+        fill="outline"
+        inputmode="search"
+        enterkeyhint="search"
+        [value]="search()"
+        (ionInput)="search.set($event.detail.value ?? '')"
+      ></ion-input>
+      @if (regions().length) {
+      <ion-select
+        label="Región"
+        labelPlacement="stacked"
+        fill="outline"
+        interface="alert"
+        cancelText="Cancelar"
+        okText="Aplicar"
+        [value]="region()"
+        (ionChange)="setRegion($event.detail.value)"
+      >
+        <ion-select-option value="">Todas las regiones</ion-select-option>
+        @for (option of regions(); track option) {
+        <ion-select-option [value]="option">{{ option }}</ion-select-option>
+        }
+      </ion-select>
+      }
+    </div>
     @if (visibleCountries().length) {
     <p class="catalog-count" role="status">
       {{ visibleCountries().length }} {{ visibleCountries().length === 1 ? 'registro' : 'registros' }}
@@ -36,7 +54,7 @@
       }
     </ul>
     } @else {
-    <p role="status">No encontramos países con ese nombre.</p>
+    <p role="status">No encontramos países con estos filtros.</p>
     } } @else {
     <p role="status">No hay países disponibles.</p>
     }

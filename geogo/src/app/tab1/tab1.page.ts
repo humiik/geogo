@@ -10,6 +10,8 @@ import {
   IonContent,
   IonHeader,
   IonInput,
+  IonSelect,
+  IonSelectOption,
   IonSpinner,
   IonTitle,
   IonToolbar,
@@ -39,6 +41,8 @@ function normalizeSearch(text: string): string {
     IonContent,
     IonHeader,
     IonInput,
+    IonSelect,
+    IonSelectOption,
     IonSpinner,
     IonTitle,
     IonToolbar,
@@ -49,10 +53,23 @@ export class Tab1Page implements OnInit {
   protected readonly state = signal<CountryLoadState>('loading');
   protected readonly countries = signal<readonly Country[]>([]);
   protected readonly search = signal('');
+  protected readonly region = signal('');
+  protected readonly regions = computed(() =>
+    [
+      ...new Set(
+        this.countries()
+          .map((country) => country.region)
+          .filter(Boolean),
+      ),
+    ].sort((first, second) => first.localeCompare(second, 'es')),
+  );
   protected readonly visibleCountries = computed(() => {
     const query = normalizeSearch(this.search());
-    const countries = this.countries();
-    return query ? countries.filter((country) => normalizeSearch(country.name.common).includes(query)) : countries;
+    const region = this.region();
+    return this.countries().filter(
+      (country) =>
+        (!region || country.region === region) && (!query || normalizeSearch(country.name.common).includes(query)),
+    );
   });
 
   // eslint-disable-next-line @angular-eslint/prefer-inject -- Requisito de evaluación: inyección por constructor.
@@ -60,6 +77,12 @@ export class Tab1Page implements OnInit {
 
   ngOnInit(): void {
     this.loadCountries();
+  }
+
+  protected setRegion(value: unknown): void {
+    if (typeof value === 'string') {
+      this.region.set(value);
+    }
   }
 
   protected loadCountries(): void {
