@@ -1,6 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Explorar</ion-title>
+    <ion-title>
+      <span class="geo-wordmark">GeoGo</span>
+      <span class="geo-toolbar-label">Explorar</span>
+    </ion-title>
+    <app-theme-toggle slot="end"></app-theme-toggle>
   </ion-toolbar>
 </ion-header>
 
@@ -14,6 +18,20 @@
   @if (state() === 'loaded') {
   <section class="geo-page" aria-labelledby="catalog-title">
     <h2 id="catalog-title" class="geo-title">Países del mundo</h2>
+    <dl class="catalog-stats" aria-label="Estadísticas del catálogo">
+      <div>
+        <dt>Países y territorios</dt>
+        <dd><app-animated-number [value]="countries().length"></app-animated-number></dd>
+      </div>
+      <div>
+        <dt>Regiones</dt>
+        <dd><app-animated-number [value]="regions().length"></app-animated-number></dd>
+      </div>
+      <div>
+        <dt>Favoritos</dt>
+        <dd><app-animated-number [value]="storage.favorites().size"></app-animated-number></dd>
+      </div>
+    </dl>
     @if (countries().length) {
     <div class="catalog-filters">
       <ion-input
@@ -24,25 +42,8 @@
         inputmode="search"
         enterkeyhint="search"
         [value]="search()"
-        (ionInput)="search.set($event.detail.value ?? '')"
+        (ionInput)="setSearch($event.detail.value ?? '')"
       ></ion-input>
-      @if (regions().length) {
-      <ion-select
-        label="Región"
-        labelPlacement="stacked"
-        fill="outline"
-        interface="alert"
-        cancelText="Cancelar"
-        okText="Aplicar"
-        [value]="region()"
-        (ionChange)="setRegion($event.detail.value)"
-      >
-        <ion-select-option value="">Todas las regiones</ion-select-option>
-        @for (option of regions(); track option) {
-        <ion-select-option [value]="option">{{ option }}</ion-select-option>
-        }
-      </ion-select>
-      }
       <ion-select
         label="Ordenar por"
         labelPlacement="stacked"
@@ -57,21 +58,37 @@
         <ion-select-option value="area">Mayor superficie</ion-select-option>
       </ion-select>
     </div>
+    @if (regions().length) {
+    <div class="geo-chips regions" role="group" aria-label="Filtrar por región">
+      <button type="button" [attr.aria-pressed]="region() === ''" (click)="setRegion('')">Todas las regiones</button>
+      @for (option of regions(); track option) {
+      <button type="button" [attr.aria-pressed]="region() === option" (click)="setRegion(option)">{{ option }}</button>
+      }
+    </div>
+    }
     <div class="catalog-actions">
-      <ion-toggle [checked]="favoritesOnly()" (ionChange)="favoritesOnly.set($event.detail.checked)">
+      <ion-toggle [checked]="favoritesOnly()" (ionChange)="setFavorites($event.detail.checked)">
         Solo favoritos
       </ion-toggle>
       <ion-button fill="outline" size="small" [disabled]="!visibleCountries().length" (click)="discoverCountry()">
         Descubrir al azar
       </ion-button>
     </div>
+    <div class="catalog-summary">
+      <div class="geo-chips" role="group" aria-label="Vista del catálogo">
+        <button type="button" [attr.aria-pressed]="view() === 'cards'" (click)="view.set('cards')">Tarjetas</button>
+        <button type="button" [attr.aria-pressed]="view() === 'list'" (click)="view.set('list')">Lista</button>
+      </div>
+      @if (visibleCountries().length) {
+      <p class="catalog-count" role="status">
+        {{ visibleCountries().length }} {{ visibleCountries().length === 1 ? 'registro' : 'registros' }}
+      </p>
+      }
+    </div>
     @if (visibleCountries().length) {
-    <p class="catalog-count" role="status">
-      {{ visibleCountries().length }} {{ visibleCountries().length === 1 ? 'registro' : 'registros' }}
-    </p>
-    <ul class="country-grid" role="list">
-      @for (country of visibleCountries(); track country.cca3) {
-      <li>
+    <ul class="country-grid" [class.country-list]="view() === 'list'" role="list">
+      @for (country of pageCountries(); track country.cca3; let index = $index) {
+      <li [style.--card-delay]="(index % 12) * 22 + 'ms'">
         <app-country-card
           [country]="country"
           [favorite]="storage.favorites().has(country.cca3)"
@@ -81,30 +98,40 @@
       </li>
       }
     </ul>
+    @if (hasMore()) {
+    <ion-button class="more" fill="outline" (click)="showMore()">Mostrar más países</ion-button>
+    }
+    <ion-infinite-scroll threshold="120px" [disabled]="!hasMore()" (ionInfinite)="showMore($event)">
+      <ion-infinite-scroll-content loadingText="Cargando más países…"></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
     } @else {
     <p role="status">No encontramos países con estos filtros.</p>
     } } @else {
     <p role="status">No hay países disponibles.</p>
     }
   </section>
+  } @else { @if (state() === 'loading') {
+  <section class="geo-page" aria-busy="true">
+    <h2 class="geo-title">Países del mundo</h2>
+    <span class="geo-sr-only" role="status">Cargando países…</span>
+    <div class="country-grid" aria-hidden="true">
+      @for (item of skeletons; track item) {
+      <div class="geo-panel skeleton-card">
+        <ion-skeleton-text class="skeleton-flag"></ion-skeleton-text>
+        <ion-skeleton-text class="skeleton-name"></ion-skeleton-text>
+        <ion-skeleton-text></ion-skeleton-text>
+      </div>
+      }
+    </div>
+  </section>
   } @else {
   <ion-card class="countries-card">
-    <ion-card-header>
-      <ion-card-title>Países del mundo</ion-card-title>
-    </ion-card-header>
     <ion-card-content>
-      @if (state() === 'loading') {
-      <div class="loading-status" role="status">
-        <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
-        <span>Cargando países…</span>
-      </div>
-      } @else {
       <p role="alert">No se pudieron cargar los países. Inténtalo de nuevo.</p>
       <ion-button class="retry-button" size="small" (click)="loadCountries()">Reintentar</ion-button>
-      }
     </ion-card-content>
   </ion-card>
-  }
+  } }
 </ion-content>
 
 <ion-modal
