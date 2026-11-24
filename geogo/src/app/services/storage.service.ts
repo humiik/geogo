@@ -5,6 +5,9 @@ import { isQuizResult, playerProgress } from '../models/progress';
 
 const favoritesKey = 'geogo.favorites.v1';
 const resultPrefix = 'geogo.result.v1.';
+const themeKey = 'geogo.theme.v1';
+
+export type GeoTheme = 'light' | 'dark';
 
 @Injectable({ providedIn: 'root' })
 export class StorageService {
@@ -13,6 +16,15 @@ export class StorageService {
   private readonly results = signal<readonly QuizResult[]>(this.readResults());
   readonly favorites = this.favoriteCodes.asReadonly();
   readonly progress = computed(() => playerProgress(this.results()));
+
+  readTheme(): GeoTheme | undefined {
+    const theme = this.read(themeKey);
+    return theme === 'light' || theme === 'dark' ? theme : undefined;
+  }
+
+  saveTheme(theme: GeoTheme): void {
+    this.write(themeKey, theme);
+  }
 
   toggleFavorite(code: string): void {
     const codes = new Set(this.readFavorites());
