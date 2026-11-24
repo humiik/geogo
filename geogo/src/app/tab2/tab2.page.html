@@ -11,5 +11,111 @@
     </ion-toolbar>
   </ion-header>
 
-  <p class="ion-padding">El comparador de países estará disponible en una próxima etapa.</p>
+  <section class="geo-page" aria-labelledby="compare-title">
+    <h2 id="compare-title" class="geo-title">Comparar países</h2>
+    @if (state() === 'loading') {
+    <div class="geo-status" role="status"><ion-spinner aria-hidden="true"></ion-spinner> Cargando países…</div>
+    } @else if (state() === 'error') {
+    <p role="alert">No se pudieron cargar los países.</p>
+    <ion-button (click)="loadCountries()">Reintentar</ion-button>
+    } @else if (countries().length < 2) {
+    <p role="status">Se necesitan al menos dos países para comparar.</p>
+    } @else {
+    <div class="pickers">
+      <ion-select
+        label="Primer país"
+        labelPlacement="stacked"
+        fill="outline"
+        cancelText="Cancelar"
+        okText="Elegir"
+        placeholder="Seleccioná un país"
+        [value]="firstCode()"
+        (ionChange)="selectCountry('first', $event.detail.value)"
+      >
+        @for (country of countries(); track country.cca3) {
+        <ion-select-option [value]="country.cca3">{{ country.name.common }}</ion-select-option>
+        }
+      </ion-select>
+      <ion-select
+        label="Segundo país"
+        labelPlacement="stacked"
+        fill="outline"
+        cancelText="Cancelar"
+        okText="Elegir"
+        placeholder="Seleccioná un país"
+        [value]="secondCode()"
+        (ionChange)="selectCountry('second', $event.detail.value)"
+      >
+        @for (country of countries(); track country.cca3) {
+        <ion-select-option [value]="country.cca3">{{ country.name.common }}</ion-select-option>
+        }
+      </ion-select>
+      <ion-button fill="outline" [disabled]="!first() || !second()" (click)="swap()">Intercambiar</ion-button>
+    </div>
+    @let firstCountry = first(); @let secondCountry = second(); @if (firstCountry && secondCountry) { @if
+    (firstCountry.cca3 === secondCountry.cca3) {
+    <p role="alert">Elegí dos países distintos.</p>
+    } @else {
+    <div class="pair">
+      @for (country of [firstCountry, secondCountry]; track country.cca3) {
+      <div class="geo-panel">
+        @if (country.flags.svg || country.flags.png; as flag) {
+        <img [src]="flag" [alt]="country.flags.alt ?? ''" />
+        }
+        <h3>{{ country.name.common }}</h3>
+      </div>
+      }
+    </div>
+    <section class="geo-panel" aria-label="Diferencias numéricas">
+      <p class="reference">La diferencia porcentual toma al primer país como referencia.</p>
+      @for (metric of metrics(); track metric.label) {
+      <div class="metric">
+        <h3>{{ metric.label }}</h3>
+        <div class="pair">
+          <div>
+            <span>{{ metric.first === null ? 'Sin datos' : (metric.first | number:'1.0-2') + ' ' + metric.unit }}</span>
+            @if (metric.difference !== null) {
+            <ion-progress-bar
+              [value]="metric.firstBar"
+              [attr.aria-label]="metric.label + ' de ' + firstCountry.name.common"
+            ></ion-progress-bar>
+            }
+          </div>
+          <div>
+            <span
+              >{{ metric.second === null ? 'Sin datos' : (metric.second | number:'1.0-2') + ' ' + metric.unit }}</span
+            >
+            @if (metric.difference !== null) {
+            <ion-progress-bar
+              color="secondary"
+              [value]="metric.secondBar"
+              [attr.aria-label]="metric.label + ' de ' + secondCountry.name.common"
+            ></ion-progress-bar>
+            }
+          </div>
+        </div>
+        @if (metric.difference !== null) {
+        <p>
+          Diferencia de {{ metric.difference | number:'1.0-2' }} {{ metric.unit }} @if (metric.percent !== null) { ({{
+          metric.percent | number:'1.0-2' }} %) }
+        </p>
+        }
+      </div>
+      }
+    </section>
+    <dl class="geo-panel facts">
+      @for (fact of facts; track fact.label) {
+      <div>
+        <dt>{{ fact.label }}</dt>
+        <dd class="pair">
+          <span>{{ fact.value(firstCountry) || 'Sin datos' }}</span
+          ><span>{{ fact.value(secondCountry) || 'Sin datos' }}</span>
+        </dd>
+      </div>
+      }
+    </dl>
+    } } @else {
+    <p role="status">Elegí dos países para ver sus diferencias.</p>
+    } }
+  </section>
 </ion-content>
