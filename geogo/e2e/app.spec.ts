@@ -38,10 +38,10 @@ test('loads Explorar, retries a failed request and opens the other tabs', async 
   await expect(tabs).toHaveCount(3);
   await tabs.filter({ hasText: 'Comparar' }).click();
   await expect(page).toHaveURL(/\/tabs\/tab2$/);
-  await expect(page.getByText('El comparador de países estará disponible en una próxima etapa.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Comparar países' })).toBeVisible();
   await tabs.filter({ hasText: 'Desafíos' }).click();
   await expect(page).toHaveURL(/\/tabs\/tab3$/);
-  await expect(page.getByText('Los desafíos de geografía estarán disponibles en una próxima etapa.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Desafíos de geografía' })).toBeVisible();
   await tabs.filter({ hasText: 'Explorar' }).click();
   await expect(card).toBeVisible();
   expect(attempts).toBe(2);
