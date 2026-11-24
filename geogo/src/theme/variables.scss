@@ -1,57 +1,87 @@
 :root {
-  --geo-forest: #183d3d;
-  --geo-teal: #42988c;
-  --geo-deep-teal: #286c61;
-  --geo-sand: #e9b872;
-  --geo-paper: #f5f3ed;
-  --geo-slate: #263238;
-  --geo-light: #fffefa;
-  --geo-background: var(--geo-paper);
-  --geo-surface: var(--geo-light);
-  --geo-ink: var(--geo-slate);
-  --geo-muted: #4a625f;
-  --geo-border: #d9e2dd;
-  --geo-tint: #e6eeea;
-  --geo-active: var(--geo-forest);
-  --geo-shadow: 0 5px 20px #183d3d12;
-  --geo-radius: 1.1rem;
+  color-scheme: light;
+
+  --geo-night: #080f1c;
+  --geo-deep: #111d2e;
+  --geo-emerald: #10b981;
+  --geo-cyan: #22d3ee;
+  --geo-violet: #8b5cf6;
+  --geo-gold: #fbbf24;
+  --geo-ice: #f1f5f9;
+
+  --geo-background: var(--geo-ice);
+  --geo-surface: #fcfdff;
+  --geo-glass: color-mix(in srgb, var(--geo-surface) 88%, transparent);
+  --geo-ink: var(--geo-deep);
+  --geo-muted: #46566d;
+  --geo-border: #cad6e4;
+  --geo-tint: #ddf5f4;
+  --geo-active: #075b57;
+  --geo-shadow: 0 8px 28px #162d5114;
+  --geo-glow: 0 0 18px #0891b221;
+  --geo-radius: 1.2rem;
+  --geo-ambient-cyan: #22d3ee19;
+  --geo-ambient-violet: #8b5cf617;
+  --geo-hero-edge: #1d2750;
+  --geo-hero-border: #366282;
 
   --ion-font-family: 'Aptos', 'Segoe UI', system-ui, sans-serif;
   --ion-background-color: var(--geo-background);
+  --ion-background-color-rgb: 241, 245, 249;
   --ion-text-color: var(--geo-ink);
+  --ion-text-color-rgb: 17, 29, 46;
   --ion-card-background: var(--geo-surface);
-  --ion-color-primary: var(--geo-forest);
-  --ion-color-primary-rgb: 24, 61, 61;
-  --ion-color-primary-contrast: #fffefa;
-  --ion-color-primary-contrast-rgb: 255, 254, 250;
-  --ion-color-primary-shade: #153636;
-  --ion-color-primary-tint: #2f5050;
-  --ion-color-secondary: var(--geo-teal);
-  --ion-color-secondary-rgb: 66, 152, 140;
-  --ion-color-secondary-contrast: #102621;
-  --ion-color-secondary-contrast-rgb: 16, 38, 33;
-  --ion-color-secondary-shade: #3a867b;
-  --ion-color-secondary-tint: #55a298;
+  --ion-color-primary: #086854;
+  --ion-color-primary-rgb: 8, 104, 84;
+  --ion-color-primary-contrast: #fff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #075b4a;
+  --ion-color-primary-tint: #217765;
+  --ion-color-secondary: #08768b;
+  --ion-color-secondary-rgb: 8, 118, 139;
+  --ion-color-secondary-contrast: #fff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #07687a;
+  --ion-color-secondary-tint: #218497;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root.ios, :root.md {
-    --geo-background: #132425;
-    --geo-surface: #1d3334;
-    --geo-ink: #f5f3ed;
-    --geo-muted: #bdceca;
-    --geo-border: #365052;
-    --geo-tint: #243f3e;
-    --geo-active: #a2dbd2;
-    --geo-shadow: 0 6px 18px #0003;
-    --ion-background-color: var(--geo-background);
-    --ion-text-color: var(--geo-ink);
-    --ion-card-background: var(--geo-surface);
-    --ion-color-primary: #a2dbd2;
-    --ion-color-primary-rgb: 162, 219, 210;
-    --ion-color-primary-contrast: #102621;
-    --ion-color-primary-contrast-rgb: 16, 38, 33;
-    --ion-color-primary-shade: #8fc1b9;
-    --ion-color-primary-tint: #abe0d7;
-  }
+:root.ion-palette-dark {
+  color-scheme: dark;
+
+  --geo-background: var(--geo-night);
+  --geo-surface: var(--geo-deep);
+  --geo-glass: color-mix(in srgb, var(--geo-deep) 83%, transparent);
+  --geo-ink: var(--geo-ice);
+  --geo-muted: #b5c4d9;
+  --geo-border: #2c4260;
+  --geo-tint: #14334a;
+  --geo-active: var(--geo-cyan);
+  --geo-shadow: 0 9px 29px #0005;
+  --geo-glow: 0 0 20px #22d3ee27;
+  --geo-ambient-cyan: #22d3ee14;
+  --geo-ambient-violet: #8b5cf61e;
+  --geo-hero-border: #3a6486;
+
+  --ion-color-primary: var(--geo-emerald);
+  --ion-color-primary-rgb: 16, 185, 129;
+  --ion-color-primary-contrast: var(--geo-night);
+  --ion-color-primary-contrast-rgb: 8, 15, 28;
+  --ion-color-primary-shade: #0ea371;
+  --ion-color-primary-tint: #28c08e;
+  --ion-color-secondary: var(--geo-cyan);
+  --ion-color-secondary-rgb: 34, 211, 238;
+  --ion-color-secondary-contrast: var(--geo-night);
+  --ion-color-secondary-contrast-rgb: 8, 15, 28;
+  --ion-color-secondary-shade: #1ebad1;
+  --ion-color-secondary-tint: #38d7f0;
+}
+
+:root.ion-palette-dark.ios,
+:root.ion-palette-dark.md {
+  --ion-background-color: var(--geo-background);
+  --ion-background-color-rgb: 8, 15, 28;
+  --ion-text-color: var(--geo-ink);
+  --ion-text-color-rgb: 241, 245, 249;
+  --ion-card-background: var(--geo-surface);
+  --ion-overlay-background-color: var(--geo-surface);
 }
