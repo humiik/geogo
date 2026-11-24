@@ -31,7 +31,7 @@ test('combina el filtro por región con el buscador y permite volver a todas las
   await page.goto('/');
   const cards = page.getByRole('listitem');
   const search = page.getByRole('textbox', { name: 'Buscar por nombre' });
-  const select = page.locator('ion-select');
+  const select = page.locator('ion-select').filter({ has: page.getByRole('button', { name: /^Región,/ }) });
   const dialog = page.getByRole('alertdialog');
   await expect(cards).toHaveCount(3);
   await expect(select.getByRole('button', { name: 'Región, Todas las regiones' })).toBeVisible();
