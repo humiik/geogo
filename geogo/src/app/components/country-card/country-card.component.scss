@@ -7,9 +7,9 @@
 ion-card {
   height: 100%;
   margin: 0;
-  border: 1px solid var(--ion-background-color-step-150, #e0e0e0);
-  border-radius: 1rem;
-  box-shadow: 0 3px 12px rgb(0 0 0 / 7%);
+  border: 1px solid var(--geo-border);
+  border-radius: var(--geo-radius);
+  box-shadow: var(--geo-shadow);
 }
 
 .flag {
@@ -18,7 +18,7 @@ ion-card {
   place-items: center;
   aspect-ratio: 2;
   padding: 0.75rem;
-  background: var(--ion-background-color-step-50, #f5f5f5);
+  background: var(--geo-tint);
 }
 
 .flag img {
@@ -52,4 +52,12 @@ dl div {
 dd {
   margin: 0;
   overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-block-start: 0.45rem;
 }
