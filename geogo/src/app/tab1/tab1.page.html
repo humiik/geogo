@@ -15,15 +15,29 @@
   <section class="catalog" aria-labelledby="catalog-title">
     <h2 id="catalog-title">Países del mundo</h2>
     @if (countries().length) {
+    <ion-input
+      class="country-search"
+      label="Buscar por nombre"
+      labelPlacement="stacked"
+      placeholder="Escribe el nombre de un país"
+      fill="outline"
+      inputmode="search"
+      enterkeyhint="search"
+      [value]="search()"
+      (ionInput)="search.set($event.detail.value ?? '')"
+    ></ion-input>
+    @if (visibleCountries().length) {
     <p class="catalog-count" role="status">
-      {{ countries().length }} {{ countries().length === 1 ? 'registro' : 'registros' }}
+      {{ visibleCountries().length }} {{ visibleCountries().length === 1 ? 'registro' : 'registros' }}
     </p>
     <ul class="country-grid" role="list">
-      @for (country of countries(); track country.cca3) {
+      @for (country of visibleCountries(); track country.cca3) {
       <li><app-country-card [country]="country"></app-country-card></li>
       }
     </ul>
     } @else {
+    <p role="status">No encontramos países con ese nombre.</p>
+    } } @else {
     <p role="status">No hay países disponibles.</p>
     }
   </section>

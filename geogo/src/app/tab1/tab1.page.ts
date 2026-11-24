@@ -1,4 +1,4 @@
-import { Component, DestroyRef, Inject, inject, signal } from '@angular/core';
+import { Component, DestroyRef, Inject, computed, inject, signal } from '@angular/core';
 import type { OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -9,6 +9,7 @@ import {
   IonCardTitle,
   IonContent,
   IonHeader,
+  IonInput,
   IonSpinner,
   IonTitle,
   IonToolbar,
@@ -19,6 +20,10 @@ import type { Country } from '../models/country';
 import { CountryService } from '../services/country.service';
 
 type CountryLoadState = 'loading' | 'loaded' | 'error';
+
+function normalizeSearch(text: string): string {
+  return text.trim().toLowerCase().normalize('NFD').replace(/\p{M}/gu, '');
+}
 
 @Component({
   selector: 'app-tab1',
@@ -33,6 +38,7 @@ type CountryLoadState = 'loading' | 'loaded' | 'error';
     IonCardTitle,
     IonContent,
     IonHeader,
+    IonInput,
     IonSpinner,
     IonTitle,
     IonToolbar,
@@ -42,6 +48,12 @@ export class Tab1Page implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   protected readonly state = signal<CountryLoadState>('loading');
   protected readonly countries = signal<readonly Country[]>([]);
+  protected readonly search = signal('');
+  protected readonly visibleCountries = computed(() => {
+    const query = normalizeSearch(this.search());
+    const countries = this.countries();
+    return query ? countries.filter((country) => normalizeSearch(country.name.common).includes(query)) : countries;
+  });
 
   // eslint-disable-next-line @angular-eslint/prefer-inject -- Requisito de evaluación: inyección por constructor.
   constructor(@Inject(CountryService) private readonly countryService: CountryService) {}
