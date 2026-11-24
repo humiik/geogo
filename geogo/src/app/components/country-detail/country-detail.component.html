@@ -1,7 +1,9 @@
 @let item = country();
 <article>
   @if (item.flags.svg || item.flags.png; as flagUrl) {
-    <img [src]="flagUrl" [alt]="item.flags.alt ?? ''" />
+    <img appFlagFallback [src]="flagUrl" [alt]="item.flags.alt ?? ''" />
+  } @else {
+    <img src="assets/geo/flag-unavailable.svg" alt="Bandera no disponible" />
   }
   <h2>{{ item.name.common }}</h2>
   <p>{{ item.name.official }}</p>
@@ -39,4 +41,5 @@
       <dd>{{ currencies() || 'Sin datos' }}</dd>
     </div>
   </dl>
+  <app-capital-weather [country]="item" [withMap]="true"></app-capital-weather>
 </article>
