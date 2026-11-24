@@ -1,6 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Comparar</ion-title>
+    <ion-title>
+      <span class="geo-wordmark">GeoGo</span>
+      <span class="geo-toolbar-label">Comparar</span>
+    </ion-title>
+    <app-theme-toggle slot="end"></app-theme-toggle>
   </ion-toolbar>
 </ion-header>
 
@@ -56,15 +60,18 @@
     (firstCountry.cca3 === secondCountry.cca3) {
     <p role="alert">Elegí dos países distintos.</p>
     } @else {
-    <div class="pair">
+    <div class="pair duel" [class.swapped]="swapped()">
       @for (country of [firstCountry, secondCountry]; track country.cca3) {
-      <div class="geo-panel">
+      <div class="geo-panel contestant">
         @if (country.flags.svg || country.flags.png; as flag) {
-        <img [src]="flag" [alt]="country.flags.alt ?? ''" />
+        <img appFlagFallback [src]="flag" [alt]="country.flags.alt ?? ''" />
+        } @else {
+        <img src="assets/geo/flag-unavailable.svg" alt="Bandera no disponible" />
         }
         <h3>{{ country.name.common }}</h3>
       </div>
       }
+      <span class="vs" aria-hidden="true">VS</span>
     </div>
     <section class="geo-panel" aria-label="Diferencias numéricas">
       <p class="reference">La diferencia porcentual toma al primer país como referencia.</p>
@@ -73,8 +80,12 @@
         <h3>{{ metric.label }}</h3>
         <div class="pair">
           <div>
-            <span>{{ metric.first === null ? 'Sin datos' : (metric.first | number:'1.0-2') + ' ' + metric.unit }}</span>
-            @if (metric.difference !== null) {
+            @if (metric.first !== null) {
+            <app-animated-number [value]="metric.first" [digits]="2"></app-animated-number> {{ metric.unit }} } @else {
+            <span>Sin datos</span> } @if (metric.first !== null && metric.second !== null && metric.first >
+            metric.second) {
+            <span class="lead">Mayor</span>
+            } @if (metric.difference !== null) {
             <ion-progress-bar
               [value]="metric.firstBar"
               [attr.aria-label]="metric.label + ' de ' + firstCountry.name.common"
@@ -82,10 +93,12 @@
             }
           </div>
           <div>
-            <span
-              >{{ metric.second === null ? 'Sin datos' : (metric.second | number:'1.0-2') + ' ' + metric.unit }}</span
-            >
-            @if (metric.difference !== null) {
+            @if (metric.second !== null) {
+            <app-animated-number [value]="metric.second" [digits]="2"></app-animated-number> {{ metric.unit }} } @else {
+            <span>Sin datos</span> } @if (metric.first !== null && metric.second !== null && metric.second >
+            metric.first) {
+            <span class="lead">Mayor</span>
+            } @if (metric.difference !== null) {
             <ion-progress-bar
               color="secondary"
               [value]="metric.secondBar"
@@ -103,6 +116,16 @@
       </div>
       }
     </section>
+    @if (active()) {
+    <section class="geo-panel capital-comparison" aria-label="Clima y hora de las capitales">
+      <h3>Clima y hora de las capitales</h3>
+      <div class="pair">
+        @for (country of [firstCountry, secondCountry]; track country.cca3) {
+        <app-capital-weather [country]="country"></app-capital-weather>
+        }
+      </div>
+    </section>
+    }
     <dl class="geo-panel facts">
       @for (fact of facts; track fact.label) {
       <div>
