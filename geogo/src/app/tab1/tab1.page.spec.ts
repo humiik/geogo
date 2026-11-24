@@ -56,12 +56,12 @@ describe('Tab1Page', () => {
     const view: HTMLElement = fixture.nativeElement;
     const cards = view.querySelectorAll('app-country-card');
     expect(cards).toHaveLength(2);
-    expect(cards[0].textContent).toContain('Argentina');
-    expect(cards[0].textContent).toContain('Buenos Aires');
-    expect(cards[0].textContent).toContain('América');
-    expect(cards[0].querySelector('img')?.getAttribute('alt')).toBe('Bandera de Argentina');
-    expect(cards[1].textContent).toContain('Sin datos');
-    expect(cards[1].querySelector('img')?.getAttribute('src')).toBe('ata.png');
+    expect(cards[0].textContent).toContain('Sin datos');
+    expect(cards[0].querySelector('img')?.getAttribute('src')).toBe('ata.png');
+    expect(cards[1].textContent).toContain('Argentina');
+    expect(cards[1].textContent).toContain('Buenos Aires');
+    expect(cards[1].textContent).toContain('América');
+    expect(cards[1].querySelector('img')?.getAttribute('alt')).toBe('Bandera de Argentina');
     const subscriber = vi.fn();
     TestBed.inject(CountryService).countries$.subscribe(subscriber);
     expect(subscriber).toHaveBeenCalledWith([
