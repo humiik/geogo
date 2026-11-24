@@ -14,6 +14,8 @@ import {
   IonToolbar,
 } from '@ionic/angular';
 
+import { CountryCardComponent } from '../components/country-card/country-card.component';
+import type { Country } from '../models/country';
 import { CountryService } from '../services/country.service';
 
 type CountryLoadState = 'loading' | 'loaded' | 'error';
@@ -23,6 +25,7 @@ type CountryLoadState = 'loading' | 'loaded' | 'error';
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
   imports: [
+    CountryCardComponent,
     IonButton,
     IonCard,
     IonCardContent,
@@ -38,7 +41,7 @@ type CountryLoadState = 'loading' | 'loaded' | 'error';
 export class Tab1Page implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   protected readonly state = signal<CountryLoadState>('loading');
-  protected readonly countryCount = signal(0);
+  protected readonly countries = signal<readonly Country[]>([]);
 
   // eslint-disable-next-line @angular-eslint/prefer-inject -- Requisito de evaluación: inyección por constructor.
   constructor(@Inject(CountryService) private readonly countryService: CountryService) {}
@@ -51,7 +54,7 @@ export class Tab1Page implements OnInit {
     this.state.set('loading');
     this.countryService.countries$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (countries) => {
-        this.countryCount.set(countries.length);
+        this.countries.set(countries);
         this.state.set('loaded');
         console.info('GeoGo · Países recibidos', countries);
       },

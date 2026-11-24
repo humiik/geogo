@@ -1,0 +1,23 @@
+@let item = country();
+<ion-card>
+  <div class="flag">
+    @if (item.flags.svg || item.flags.png; as flagUrl) {
+      <img [src]="flagUrl" [alt]="'Bandera de ' + item.name.common" loading="lazy" decoding="async" />
+    } @else {
+      <span>Bandera no disponible</span>
+    }
+  </div>
+  <ion-card-content>
+    <h3>{{ item.name.common }}</h3>
+    <dl>
+      <div>
+        <dt>Capital</dt>
+        <dd>{{ item.capital?.join(', ') || 'Sin datos' }}</dd>
+      </div>
+      <div>
+        <dt>Región</dt>
+        <dd>{{ item.region || 'Sin datos' }}</dd>
+      </div>
+    </dl>
+  </ion-card-content>
+</ion-card>

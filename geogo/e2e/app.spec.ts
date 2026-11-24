@@ -15,6 +15,7 @@ test('loads Explorar, retries a failed request and opens the other tabs', async 
           cca3: 'ARG',
           name: { common: 'Argentina', official: 'Argentine Republic' },
           flags: { png: 'arg.png', svg: 'arg.svg' },
+          capital: ['Buenos Aires'],
           region: 'Americas',
           population: 47000000,
           area: 2780400,
@@ -27,7 +28,11 @@ test('loads Explorar, retries a failed request and opens the other tabs', async 
   await expect(page).toHaveURL(/\/tabs\/tab1$/);
   await expect(page.getByRole('alert')).toContainText('No se pudieron cargar los países');
   await page.getByRole('button', { name: 'Reintentar' }).click();
-  await expect(page.getByRole('status')).toContainText('Registros geográficos recibidos: 1');
+  const card = page.getByRole('listitem').filter({ hasText: 'Argentina' });
+  await expect(card.getByRole('heading', { name: 'Argentina' })).toBeVisible();
+  await expect(card.getByRole('img', { name: 'Bandera de Argentina' })).toBeVisible();
+  await expect(card).toContainText('Buenos Aires');
+  await expect(card).toContainText('Americas');
 
   const tabs = page.locator('ion-tab-button');
   await expect(tabs).toHaveCount(3);
@@ -36,6 +41,6 @@ test('loads Explorar, retries a failed request and opens the other tabs', async 
   await tabs.filter({ hasText: 'Desafíos' }).click();
   await expect(page).toHaveURL(/\/tabs\/tab3$/);
   await tabs.filter({ hasText: 'Explorar' }).click();
-  await expect(page.getByRole('status')).toContainText('Registros geográficos recibidos: 1');
+  await expect(card).toBeVisible();
   expect(attempts).toBe(2);
 });

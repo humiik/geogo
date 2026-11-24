@@ -11,22 +11,38 @@
     </ion-toolbar>
   </ion-header>
 
+  @if (state() === 'loaded') {
+  <section class="catalog" aria-labelledby="catalog-title">
+    <h2 id="catalog-title">Países del mundo</h2>
+    @if (countries().length) {
+    <p class="catalog-count" role="status">
+      {{ countries().length }} {{ countries().length === 1 ? 'registro' : 'registros' }}
+    </p>
+    <ul class="country-grid" role="list">
+      @for (country of countries(); track country.cca3) {
+      <li><app-country-card [country]="country"></app-country-card></li>
+      }
+    </ul>
+    } @else {
+    <p role="status">No hay países disponibles.</p>
+    }
+  </section>
+  } @else {
   <ion-card class="countries-card">
     <ion-card-header>
       <ion-card-title>Países del mundo</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      @switch (state()) { @case ('loading') {
+      @if (state() === 'loading') {
       <div class="loading-status" role="status">
         <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
         <span>Cargando países…</span>
       </div>
-      } @case ('loaded') {
-      <p role="status">Registros geográficos recibidos: {{ countryCount() }}.</p>
-      } @case ('error') {
+      } @else {
       <p role="alert">No se pudieron cargar los países. Inténtalo de nuevo.</p>
-      <ion-button class="retry-button" size="small" (click)="loadCountries()"> Reintentar </ion-button>
-      } }
+      <ion-button class="retry-button" size="small" (click)="loadCountries()">Reintentar</ion-button>
+      }
     </ion-card-content>
   </ion-card>
+  }
 </ion-content>
