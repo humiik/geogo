@@ -25,35 +25,52 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import '@ionic/angular/css/palettes/dark.class.css';
+@import 'leaflet/dist/leaflet.css';
 
 ion-toolbar {
-  --background: var(--geo-surface);
+  --background: var(--geo-glass);
   --color: var(--geo-ink);
+  --border-color: var(--geo-border);
+  --min-height: 3.75rem;
+}
+
+.geo-wordmark {
+  margin-inline-end: 0.6rem;
+  color: var(--geo-active);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.geo-toolbar-label {
+  padding-inline-start: 0.6rem;
+  border-inline-start: 1px solid var(--geo-border);
+  color: var(--geo-muted);
+  font-size: 0.86rem;
+  font-weight: 550;
 }
 
 ion-content {
-  --background: var(--geo-background);
+  --background:
+    radial-gradient(ellipse at 100% 0%, var(--geo-ambient-cyan), transparent 28rem),
+    radial-gradient(ellipse at 0% 35%, var(--geo-ambient-violet), transparent 24rem),
+    var(--geo-background);
 }
 
-ion-tab-bar {
-  --background: var(--geo-surface);
-  --border: 1px solid var(--geo-border);
-}
-
-ion-tab-button {
-  --background-focused: var(--geo-tint);
+ion-card {
   --color: var(--geo-muted);
-  --color-selected: var(--geo-active);
+}
+
+ion-button {
+  --border-radius: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+ion-button::part(native):focus-visible {
+  outline: 2px solid var(--geo-active);
+  outline-offset: -2px;
 }
 
 .geo-page {
@@ -67,28 +84,40 @@ ion-tab-button {
   position: relative;
   display: flex;
   align-items: flex-end;
-  min-height: 6.6rem;
-  margin: 0 0 1rem;
-  padding: clamp(1rem, 4vw, 1.65rem);
+  min-height: clamp(7.5rem, 21vw, 10rem);
+  margin: 0 0 1.15rem;
+  padding: clamp(1rem, 4vw, 1.8rem);
   overflow: hidden;
+  border: 1px solid var(--geo-hero-border);
   border-radius: var(--geo-radius);
-  color: var(--geo-light);
-  background: linear-gradient(115deg, var(--geo-forest) 35%, var(--geo-deep-teal) 100%);
+  color: var(--geo-ice);
+  background: linear-gradient(110deg, var(--geo-night) 22%, var(--geo-hero-edge));
+  box-shadow: var(--geo-shadow), var(--geo-glow);
   font-size: clamp(1.55rem, 4vw, 2.35rem);
-  font-weight: 750;
-  letter-spacing: -0.025em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.geo-title::before {
+  position: absolute;
+  z-index: -2;
+  inset: -75% -12%;
+  background:
+    radial-gradient(ellipse at 77% 46%, var(--geo-violet), transparent 28%),
+    radial-gradient(ellipse at 89% 61%, var(--geo-cyan), transparent 33%);
+  opacity: 0.35;
+  content: '';
 }
 
 .geo-title::after {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: repeating-radial-gradient(
-    ellipse 13rem 9rem at 92% 32%,
-    transparent 0 16px,
-    color-mix(in srgb, var(--geo-sand) 35%, transparent) 17px 18px
-  );
-  mask-image: linear-gradient(90deg, transparent 36%, #000 95%);
+  background:
+    radial-gradient(circle at 82% 28%, var(--geo-gold) 0 2px, transparent 3px),
+    url('./assets/geo/atlas-grid.svg') right 40% center / auto 155% no-repeat;
+  mask-image: linear-gradient(90deg, transparent 16%, black 100%);
+  opacity: 0.5;
   content: '';
 }
 
@@ -106,9 +135,39 @@ ion-tab-button {
   align-items: center;
 }
 
+.geo-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.geo-map-pin {
+  border: 3px solid var(--geo-ice);
+  border-radius: 50%;
+  background: var(--geo-emerald);
+  box-shadow: 0 0 0 3px var(--geo-night);
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  .geo-title,
   .geo-panel {
-    animation: geo-appear 180ms ease-out both;
+    animation: geo-appear 210ms ease-out both;
+  }
+
+  .geo-title::before {
+    animation: geo-drift 12s ease-in-out infinite alternate;
+  }
+
+  ion-button::part(native) {
+    transition: transform 140ms ease-out;
+  }
+
+  ion-button:active::part(native) {
+    transform: scale(0.97);
   }
 }
 
@@ -116,5 +175,148 @@ ion-tab-button {
   from {
     opacity: 0.6;
     transform: translateY(3px);
+  }
+}
+
+@keyframes geo-drift {
+  to {
+    transform: translate(-5%, 4%);
+  }
+}
+.geo-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.geo-chips.regions {
+  margin-block-end: 0.8rem;
+}
+
+.geo-chips button {
+  min-height: 2.75rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--geo-border);
+  border-radius: 3rem;
+  background: var(--geo-surface);
+  color: var(--geo-ink);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.geo-chips button[aria-pressed='true'] {
+  border-color: var(--geo-active);
+  background: var(--geo-tint);
+  color: var(--geo-active);
+  font-weight: 700;
+}
+
+.geo-chips button:focus-visible {
+  outline: 2px solid var(--geo-active);
+  outline-offset: 2px;
+}
+
+
+.duel {
+  position: relative;
+}
+
+.contestant {
+  --team: var(--geo-cyan);
+  border-color: color-mix(in srgb, var(--team) 40%, var(--geo-border));
+  background: radial-gradient(ellipse at top, color-mix(in srgb, var(--team) 17%, transparent), transparent 78%), var(--geo-surface);
+}
+
+.contestant:nth-child(2) {
+  --team: var(--geo-violet);
+}
+
+.vs {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.25rem 0.38rem;
+  border-radius: 0.45rem;
+  background: var(--geo-night);
+  color: var(--geo-ice);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+
+.mode-card {
+  --mode-accent: var(--geo-violet);
+  border-color: color-mix(in srgb, var(--mode-accent) 45%, var(--geo-border));
+  background: radial-gradient(ellipse at top right, color-mix(in srgb, var(--mode-accent) 21%, transparent), transparent 72%), var(--geo-surface);
+}
+
+.mode-card[data-mode='capitals'] { --mode-accent: var(--geo-cyan); }
+.mode-card[data-mode='population'] { --mode-accent: var(--geo-emerald); }
+.mode-card[data-mode='regions'] { --mode-accent: var(--geo-gold); }
+
+.mode-card ion-icon {
+  padding: 0.4rem;
+  margin-block-end: 0.45rem;
+  border-radius: 0.65rem;
+  background: var(--geo-night);
+  color: var(--mode-accent);
+  font-size: 1.5rem;
+}
+
+
+.geo-quiz {
+  .feedback {
+    padding: 0.55rem 0.7rem;
+    border-inline-start: 3px solid var(--ion-color-danger);
+    border-radius: 0.45rem;
+    background: color-mix(in srgb, var(--ion-color-danger) 12%, var(--geo-surface));
+  }
+
+  .feedback.correct {
+    border-color: var(--geo-emerald);
+    background: color-mix(in srgb, var(--geo-emerald) 16%, var(--geo-surface));
+  }
+
+  ion-progress-bar::part(progress) {
+    background: linear-gradient(90deg, var(--geo-violet), var(--geo-cyan));
+  }
+
+  .result.celebrate {
+    border-color: var(--geo-gold);
+    box-shadow: var(--geo-shadow), 0 0 22px color-mix(in srgb, var(--geo-gold) 27%, transparent);
+  }
+
+  .xp-reward { color: var(--geo-active); font-size: 1.4rem; }
+
+  .badge {
+    padding: 0.55rem;
+    border: 1px dashed var(--geo-border);
+    border-radius: 0.55rem;
+    color: var(--geo-muted);
+  }
+
+  .badge.earned {
+    border-style: solid;
+    border-color: var(--geo-active);
+    background: var(--geo-tint);
+    color: var(--geo-ink);
+  }
+
+  .badge ion-icon { margin-inline-end: 0.35rem; vertical-align: text-bottom; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .question { animation: quiz-enter 220ms ease-out; }
+    .question.even { animation: quiz-enter-even 220ms ease-out; }
+    .feedback, .result.celebrate .xp-reward { animation: geo-appear 280ms ease-out; }
+    ion-progress-bar::part(progress) { transition: transform 280ms ease-out; }
+  }
+
+  @keyframes quiz-enter {
+    from { opacity: 0.6; transform: translateX(0.6rem); }
+  }
+
+  @keyframes quiz-enter-even {
+    from { opacity: 0.6; transform: translateX(-0.6rem); }
   }
 }
