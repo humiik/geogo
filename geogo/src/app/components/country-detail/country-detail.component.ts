@@ -3,10 +3,12 @@ import { Component, computed, input } from '@angular/core';
 
 import type { Country } from '../../models/country';
 import { isGeographicValue, populationDensity } from '../../models/country-metrics';
+import { CapitalWeatherComponent } from '../capital-weather.component';
+import { FlagFallbackDirective } from '../flag-fallback.directive';
 
 @Component({
   selector: 'app-country-detail',
-  imports: [DecimalPipe],
+  imports: [CapitalWeatherComponent, DecimalPipe, FlagFallbackDirective],
   templateUrl: './country-detail.component.html',
   styleUrl: './country-detail.component.scss',
 })
