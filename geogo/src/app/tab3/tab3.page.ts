@@ -5,6 +5,7 @@ import {
   IonButton,
   IonContent,
   IonHeader,
+  IonIcon,
   IonLabel,
   IonProgressBar,
   IonSegment,
@@ -13,7 +14,18 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import {
+  compassOutline,
+  flagOutline,
+  locationOutline,
+  peopleOutline,
+  ribbonOutline,
+  lockClosedOutline,
+} from 'ionicons/icons';
 
+import { AnimatedNumberComponent } from '../components/animated-number/animated-number.component';
+import { ThemeToggleComponent } from '../components/theme-toggle/theme-toggle.component';
 import type { Country } from '../models/country';
 import { xpPerAnswer } from '../models/progress';
 import type { QuizMode, QuizRound } from '../models/quiz';
@@ -27,9 +39,12 @@ import { StorageService } from '../services/storage.service';
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss'],
   imports: [
+    AnimatedNumberComponent,
+    ThemeToggleComponent,
     IonButton,
     IonContent,
     IonHeader,
+    IonIcon,
     IonLabel,
     IonProgressBar,
     IonSegment,
@@ -47,6 +62,13 @@ export class Tab3Page implements OnInit {
   protected readonly xpPerAnswer = xpPerAnswer;
   protected readonly segment = signal<'games' | 'stats'>('games');
   protected readonly modes = quizModes;
+  protected readonly modeIcons: Record<QuizMode, string> = {
+    flags: 'flag-outline',
+    capitals: 'location-outline',
+    population: 'people-outline',
+    regions: 'compass-outline',
+  };
+  protected readonly levelUp = signal(false);
   protected readonly questionCount = questionsPerRound;
   protected readonly countries = signal<readonly Country[]>([]);
   protected readonly state = signal<'loading' | 'loaded' | 'error'>('loading');
@@ -62,7 +84,9 @@ export class Tab3Page implements OnInit {
   });
 
   // eslint-disable-next-line @angular-eslint/prefer-inject -- Requisito de evaluación: inyección por constructor.
-  constructor(@Inject(CountryService) private readonly countryService: CountryService) {}
+  constructor(@Inject(CountryService) private readonly countryService: CountryService) {
+    addIcons({ compassOutline, flagOutline, locationOutline, peopleOutline, ribbonOutline, lockClosedOutline });
+  }
 
   ngOnInit(): void {
     this.loadCountries();
@@ -80,6 +104,7 @@ export class Tab3Page implements OnInit {
   }
 
   protected play(mode: QuizMode): void {
+    this.levelUp.set(false);
     this.index.set(0);
     this.score.set(0);
     this.selected.set(null);
@@ -99,7 +124,9 @@ export class Tab3Page implements OnInit {
     if (id === question.answerId) this.score.update((score) => score + 1);
     const round = this.round();
     if (round && this.index() + 1 === round.questions.length) {
+      const levelBefore = this.progress().level.name;
       this.storage.recordRound({ id: round.id, mode: round.mode, correct: this.score() });
+      this.levelUp.set(this.progress().level.name !== levelBefore);
     }
   }
 
