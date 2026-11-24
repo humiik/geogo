@@ -35,3 +35,86 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+ion-toolbar {
+  --background: var(--geo-surface);
+  --color: var(--geo-ink);
+}
+
+ion-content {
+  --background: var(--geo-background);
+}
+
+ion-tab-bar {
+  --background: var(--geo-surface);
+  --border: 1px solid var(--geo-border);
+}
+
+ion-tab-button {
+  --background-focused: var(--geo-tint);
+  --color: var(--geo-muted);
+  --color-selected: var(--geo-active);
+}
+
+.geo-page {
+  max-width: 66rem;
+  margin-inline: auto;
+  padding: 1.25rem 1rem 2rem;
+}
+
+.geo-title {
+  isolation: isolate;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 6.6rem;
+  margin: 0 0 1rem;
+  padding: clamp(1rem, 4vw, 1.65rem);
+  overflow: hidden;
+  border-radius: var(--geo-radius);
+  color: var(--geo-light);
+  background: linear-gradient(115deg, var(--geo-forest) 35%, var(--geo-deep-teal) 100%);
+  font-size: clamp(1.55rem, 4vw, 2.35rem);
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+.geo-title::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: repeating-radial-gradient(
+    ellipse 13rem 9rem at 92% 32%,
+    transparent 0 16px,
+    color-mix(in srgb, var(--geo-sand) 35%, transparent) 17px 18px
+  );
+  mask-image: linear-gradient(90deg, transparent 36%, #000 95%);
+  content: '';
+}
+
+.geo-panel {
+  padding: 1rem;
+  border: 1px solid var(--geo-border);
+  border-radius: var(--geo-radius);
+  background: var(--geo-surface);
+  box-shadow: var(--geo-shadow);
+}
+
+.geo-status {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .geo-panel {
+    animation: geo-appear 180ms ease-out both;
+  }
+}
+
+@keyframes geo-appear {
+  from {
+    opacity: 0.6;
+    transform: translateY(3px);
+  }
+}
