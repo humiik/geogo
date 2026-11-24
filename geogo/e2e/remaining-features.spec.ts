@@ -17,6 +17,7 @@ const spanishRegions: Record<string, string> = {
 };
 
 test.beforeEach(async ({ page }) => {
+  await page.route('https://restcountries.conventus.de/v3.1/alpha/**', (route) => route.fulfill({ json: {} }));
   await page.route('https://restcountries.conventus.de/v3.1/all?**', (route) =>
     route.fulfill({
       json: examples.map((item) => ({
@@ -56,23 +57,48 @@ test('ordena, guarda un favorito y abre su ficha al descubrirlo', async ({ page 
 
   await page.getByRole('button', { name: 'Descubrir al azar' }).click();
   const modal = page.locator('ion-modal');
-  await expect(modal.getByRole('heading', { name: 'Brasil' })).toBeVisible();
+  await expect(modal.getByRole('heading', { name: 'Brasil', exact: true })).toBeVisible();
   await expect(modal).toContainText('Brasilia');
   await modal.getByRole('button', { name: 'Cerrar' }).click();
   await expect(modal).toBeHidden();
 });
 
 test('valida duplicados, calcula la diferencia e intercambia los países', async ({ page }) => {
+  let weatherRequests = 0;
+  await page.route('https://restcountries.conventus.de/v3.1/alpha/**', (route) =>
+    route.fulfill({
+      json: { capitalInfo: { latlng: route.request().url().includes('/ARG?') ? [-34.6, -58.4] : [-15.8, -47.9] } },
+    }),
+  );
+  await page.route('https://api.open-meteo.com/v1/forecast?**', (route) => {
+    weatherRequests++;
+    const argentina = new URL(route.request().url()).searchParams.get('latitude') === '-34.6';
+    return route.fulfill({
+      json: {
+        timezone: argentina ? 'America/Argentina/Buenos_Aires' : 'America/Sao_Paulo',
+        current: { temperature_2m: argentina ? 17 : 25, weather_code: argentina ? 3 : 0 },
+      },
+    });
+  });
   await page.goto('/tabs/tab2');
   await choose(page, 'Primer país', 'Argentina', 'Elegir');
   await choose(page, 'Segundo país', 'Argentina', 'Elegir');
   await expect(page.getByRole('alert')).toContainText('Elegí dos países distintos');
+  expect(weatherRequests).toBe(0);
   await choose(page, 'Segundo país', 'Brasil', 'Elegir');
   const stats = page.getByRole('region', { name: 'Diferencias numéricas' });
   await expect(stats).toContainText('Diferencia de 165 hab.');
   await expect(stats.getByRole('progressbar')).toHaveCount(6);
+  const capitals = page.getByRole('region', { name: 'Clima y hora de las capitales' });
+  await expect(capitals.getByText('17 °C', { exact: true })).toBeVisible();
+  await expect(capitals.getByText('25 °C', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Intercambiar' }).click();
   await expect(page.getByRole('button', { name: 'Primer país, Brasil' })).toBeVisible();
+  await expect(capitals.getByRole('region', { name: /^Clima y ubicación/ }).first()).toHaveAttribute(
+    'aria-label',
+    'Clima y ubicación de Brasil',
+  );
+  expect(weatherRequests).toBe(2);
 });
 
 test('completa cinco preguntas y conserva los puntos al recargar', async ({ page }) => {
@@ -93,7 +119,7 @@ test('completa cinco preguntas y conserva los puntos al recargar', async ({ page
   await page.reload();
   await page.locator('ion-segment-button[value="stats"]').click();
   await expect(page.getByRole('tab', { name: 'Estadísticas', exact: true })).toHaveAttribute('aria-selected', 'true');
-  await expect(page.getByText('50 XP', { exact: true })).toBeVisible();
+  await expect(page.locator('.xp app-animated-number .geo-sr-only')).toHaveText('50');
   await expect(page.getByText('100 %', { exact: true })).toBeVisible();
   await expect(page.getByText('Sin escalas', { exact: true }).locator('..')).toContainText('Obtenida');
 });
