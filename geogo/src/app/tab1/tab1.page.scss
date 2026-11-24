@@ -1,17 +1,6 @@
-.catalog {
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 1.25rem 1rem 1.5rem;
-}
-
-.catalog h2 {
-  margin: 0;
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  font-weight: 700;
-}
-
 .catalog-count {
-  margin: 0.35rem 0 1rem;
+  margin: 0.35rem 0 0.75rem;
+  color: var(--geo-muted);
 }
 
 .catalog-filters {
@@ -21,15 +10,34 @@
   margin: 1rem 0;
 }
 
+.catalog-filters ion-input, .catalog-filters ion-select {
+  --background: var(--geo-surface);
+  --border-color: var(--geo-border);
+  --border-radius: 0.75rem;
+}
+
+.catalog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-block-end: 1rem;
+}
+
 @media (min-width: 36rem) {
-  .catalog-filters:has(ion-select) {
+  .catalog-filters {
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+
+  .catalog-filters:has(ion-select:nth-child(3)) {
+    grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
   }
 }
 
 .country-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10.5rem), 1fr));
   gap: 0.85rem;
   margin: 0;
   padding: 0;
