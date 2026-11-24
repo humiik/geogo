@@ -14,6 +14,10 @@ import {
   IonToolbar,
 } from '@ionic/angular';
 
+import { AnimatedNumberComponent } from '../components/animated-number/animated-number.component';
+import { CapitalWeatherComponent } from '../components/capital-weather.component';
+import { FlagFallbackDirective } from '../components/flag-fallback.directive';
+import { ThemeToggleComponent } from '../components/theme-toggle/theme-toggle.component';
 import type { Country } from '../models/country';
 import { compareMetric, populationDensity } from '../models/country-metrics';
 import { CountryService } from '../services/country.service';
@@ -37,6 +41,10 @@ const facts = [
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
   imports: [
+    AnimatedNumberComponent,
+    CapitalWeatherComponent,
+    FlagFallbackDirective,
+    ThemeToggleComponent,
     DecimalPipe,
     IonButton,
     IonContent,
@@ -55,6 +63,8 @@ export class Tab2Page implements OnInit {
   protected readonly countries = signal<readonly Country[]>([]);
   protected readonly firstCode = signal('');
   protected readonly secondCode = signal('');
+  protected readonly active = signal(false);
+  protected readonly swapped = signal(false);
   protected readonly first = computed(() => this.countries().find((country) => country.cca3 === this.firstCode()));
   protected readonly second = computed(() => this.countries().find((country) => country.cca3 === this.secondCode()));
   protected readonly facts = facts;
@@ -74,6 +84,14 @@ export class Tab2Page implements OnInit {
 
   ngOnInit(): void {
     this.loadCountries();
+  }
+
+  ionViewWillEnter(): void {
+    this.active.set(true);
+  }
+
+  ionViewWillLeave(): void {
+    this.active.set(false);
   }
 
   protected loadCountries(): void {
@@ -98,5 +116,6 @@ export class Tab2Page implements OnInit {
     const first = this.firstCode();
     this.firstCode.set(this.secondCode());
     this.secondCode.set(first);
+    this.swapped.update((swapped) => !swapped);
   }
 }
