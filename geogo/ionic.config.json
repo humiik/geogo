@@ -1,0 +1,7 @@
+{
+  "name": "geogo",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

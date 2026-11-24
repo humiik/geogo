@@ -1,0 +1,15 @@
+.countries-card {
+  max-width: 34rem;
+  margin: 1rem auto;
+  width: calc(100% - 2rem);
+}
+
+.loading-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.retry-button {
+  margin-top: 0.75rem;
+}

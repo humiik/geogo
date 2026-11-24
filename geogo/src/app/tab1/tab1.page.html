@@ -1,0 +1,32 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Explorar</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Explorar</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-card class="countries-card">
+    <ion-card-header>
+      <ion-card-title>Países del mundo</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      @switch (state()) { @case ('loading') {
+      <div class="loading-status" role="status">
+        <ion-spinner name="crescent" aria-hidden="true"></ion-spinner>
+        <span>Cargando países…</span>
+      </div>
+      } @case ('loaded') {
+      <p role="status">Registros geográficos recibidos: {{ countryCount() }}.</p>
+      } @case ('error') {
+      <p role="alert">No se pudieron cargar los países. Inténtalo de nuevo.</p>
+      <ion-button class="retry-button" size="small" (click)="loadCountries()"> Reintentar </ion-button>
+      } }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
