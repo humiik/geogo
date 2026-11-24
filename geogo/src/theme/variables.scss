@@ -1,2 +1,57 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+:root {
+  --geo-forest: #183d3d;
+  --geo-teal: #42988c;
+  --geo-deep-teal: #286c61;
+  --geo-sand: #e9b872;
+  --geo-paper: #f5f3ed;
+  --geo-slate: #263238;
+  --geo-light: #fffefa;
+  --geo-background: var(--geo-paper);
+  --geo-surface: var(--geo-light);
+  --geo-ink: var(--geo-slate);
+  --geo-muted: #4a625f;
+  --geo-border: #d9e2dd;
+  --geo-tint: #e6eeea;
+  --geo-active: var(--geo-forest);
+  --geo-shadow: 0 5px 20px #183d3d12;
+  --geo-radius: 1.1rem;
+
+  --ion-font-family: 'Aptos', 'Segoe UI', system-ui, sans-serif;
+  --ion-background-color: var(--geo-background);
+  --ion-text-color: var(--geo-ink);
+  --ion-card-background: var(--geo-surface);
+  --ion-color-primary: var(--geo-forest);
+  --ion-color-primary-rgb: 24, 61, 61;
+  --ion-color-primary-contrast: #fffefa;
+  --ion-color-primary-contrast-rgb: 255, 254, 250;
+  --ion-color-primary-shade: #153636;
+  --ion-color-primary-tint: #2f5050;
+  --ion-color-secondary: var(--geo-teal);
+  --ion-color-secondary-rgb: 66, 152, 140;
+  --ion-color-secondary-contrast: #102621;
+  --ion-color-secondary-contrast-rgb: 16, 38, 33;
+  --ion-color-secondary-shade: #3a867b;
+  --ion-color-secondary-tint: #55a298;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root.ios, :root.md {
+    --geo-background: #132425;
+    --geo-surface: #1d3334;
+    --geo-ink: #f5f3ed;
+    --geo-muted: #bdceca;
+    --geo-border: #365052;
+    --geo-tint: #243f3e;
+    --geo-active: #a2dbd2;
+    --geo-shadow: 0 6px 18px #0003;
+    --ion-background-color: var(--geo-background);
+    --ion-text-color: var(--geo-ink);
+    --ion-card-background: var(--geo-surface);
+    --ion-color-primary: #a2dbd2;
+    --ion-color-primary-rgb: 162, 219, 210;
+    --ion-color-primary-contrast: #102621;
+    --ion-color-primary-contrast-rgb: 16, 38, 33;
+    --ion-color-primary-shade: #8fc1b9;
+    --ion-color-primary-tint: #abe0d7;
+  }
+}
