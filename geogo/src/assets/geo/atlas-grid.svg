@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320" fill="none">
+  <defs>
+    <pattern id="points" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="white" opacity=".36"/>
+    </pattern>
+  </defs>
+  <path fill="url(#points)" d="M0 0h680v320H0z"/>
+  <g stroke="white" stroke-width=".85" opacity=".36">
+    <ellipse cx="363" cy="156" rx="276" ry="142"/>
+    <ellipse cx="363" cy="156" rx="198" ry="142"/>
+    <ellipse cx="363" cy="156" rx="108" ry="142"/>
+    <path d="M363 14v284M87 156h552M119 88c131 27 354 27 488 0M119 224c131-27 354-27 488 0"/>
+  </g>
+  <g stroke="white" stroke-linejoin="round" stroke-width="1.6" opacity=".77">
+    <path d="m123 77 28-19 25 6 34-15 42 12 25 22-10 19-29 3-13 25-20 5-12 22 13 17-8 7-22-11-7-21-24-14-15-26 9-12-21-11z"/>
+    <path d="m211 172 26 5 25 17 4 17-19 22-10 22-21 26-10-14 6-30-11-21 2-24z"/>
+    <path d="m259 47 30-17 28 2 13 14-14 16-31 8z"/>
+    <path d="m329 104 19-12 12-18 36-3 16-13 47 12 31-9 35 12 34-2 32 22-17 19-29 2-19 25-22-7-13 20-20-6-12-23-25-4-18 11-18-16-17-5-11 10-39-4z"/>
+    <path d="m322 126 26-4 30 12 9 20 18 11-7 24-23 42-16 2-11-28-17-18-22-17 1-28zM465 151l28 11 15 21-11 2-22-16zM517 195l24-4 25 9 9 13-31-2z"/>
+    <path d="m527 225 24-8 17 8 15 22-11 16-28-6-27 6-9-21zM585 268l21-12-9 20z"/>
+  </g>
+  <path d="M226 219Q310 101 386 104T558 240" stroke="white" stroke-width="1.1" stroke-dasharray="4 6" opacity=".70"/>
+  <g fill="white">
+    <circle cx="226" cy="219" r="3"/>
+    <circle cx="386" cy="104" r="3"/>
+    <circle cx="558" cy="240" r="3"/>
+  </g>
+</svg>
