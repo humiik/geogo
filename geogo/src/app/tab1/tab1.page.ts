@@ -5,22 +5,25 @@ import {
   IonButton,
   IonCard,
   IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
   IonContent,
   IonHeader,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
   IonInput,
   IonModal,
   IonSelect,
   IonSelectOption,
-  IonSpinner,
+  IonSkeletonText,
   IonTitle,
   IonToggle,
   IonToolbar,
 } from '@ionic/angular';
+import type { InfiniteScrollCustomEvent } from '@ionic/angular';
 
+import { AnimatedNumberComponent } from '../components/animated-number/animated-number.component';
 import { CountryCardComponent } from '../components/country-card/country-card.component';
 import { CountryDetailComponent } from '../components/country-detail/country-detail.component';
+import { ThemeToggleComponent } from '../components/theme-toggle/theme-toggle.component';
 import type { Country } from '../models/country';
 import { isGeographicValue } from '../models/country-metrics';
 import { CountryService } from '../services/country.service';
@@ -28,6 +31,7 @@ import { StorageService } from '../services/storage.service';
 
 type CountryLoadState = 'loading' | 'loaded' | 'error';
 type CountryOrder = 'name' | 'population' | 'area';
+const batchSize = 12;
 
 const byName = new Intl.Collator('es').compare;
 
@@ -49,20 +53,22 @@ function normalizeSearch(text: string): string {
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
   imports: [
+    AnimatedNumberComponent,
+    ThemeToggleComponent,
     CountryCardComponent,
     CountryDetailComponent,
     IonButton,
     IonCard,
     IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
     IonContent,
     IonHeader,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
     IonInput,
     IonModal,
     IonSelect,
     IonSelectOption,
-    IonSpinner,
+    IonSkeletonText,
     IonTitle,
     IonToggle,
     IonToolbar,
@@ -77,6 +83,9 @@ export class Tab1Page implements OnInit {
   protected readonly order = signal<CountryOrder>('name');
   protected readonly selectedCountry = signal<Country | null>(null);
   protected readonly favoritesOnly = signal(false);
+  protected readonly view = signal<'cards' | 'list'>('cards');
+  protected readonly limit = signal(batchSize);
+  protected readonly skeletons = [0, 1, 2, 3, 4, 5];
   protected readonly storage = inject(StorageService);
   protected readonly regions = computed(() =>
     [
@@ -102,6 +111,8 @@ export class Tab1Page implements OnInit {
       )
       .sort((first, second) => compareCountries(first, second, order));
   });
+  protected readonly pageCountries = computed(() => this.visibleCountries().slice(0, this.limit()));
+  protected readonly hasMore = computed(() => this.visibleCountries().length > this.limit());
 
   // eslint-disable-next-line @angular-eslint/prefer-inject -- Requisito de evaluación: inyección por constructor.
   constructor(@Inject(CountryService) private readonly countryService: CountryService) {}
@@ -110,14 +121,31 @@ export class Tab1Page implements OnInit {
     this.loadCountries();
   }
 
-  protected setRegion(value: unknown): void {
-    if (typeof value === 'string') {
-      this.region.set(value);
-    }
+  protected setRegion(region: string): void {
+    this.region.set(region);
+    this.limit.set(batchSize);
+  }
+
+  protected setSearch(search: string): void {
+    this.search.set(search);
+    this.limit.set(batchSize);
+  }
+
+  protected setFavorites(checked: boolean): void {
+    this.favoritesOnly.set(checked);
+    this.limit.set(batchSize);
+  }
+
+  protected showMore(event?: InfiniteScrollCustomEvent): void {
+    if (this.hasMore()) this.limit.update((limit) => limit + batchSize);
+    void event?.target.complete();
   }
 
   protected setOrder(value: unknown): void {
-    if (value === 'name' || value === 'population' || value === 'area') this.order.set(value);
+    if (value === 'name' || value === 'population' || value === 'area') {
+      this.order.set(value);
+      this.limit.set(batchSize);
+    }
   }
 
   protected discoverCountry(): void {
