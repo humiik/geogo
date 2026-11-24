@@ -15,3 +15,7 @@ export interface Country {
   languages?: Record<string, string>;
   currencies?: Record<string, { name: string; symbol?: string }>;
 }
+
+export type RestCountry = Omit<Country, 'name'> & {
+  translations?: { spa?: Partial<CountryName> };
+};

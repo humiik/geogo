@@ -4,7 +4,8 @@ import { map, shareReplay } from 'rxjs';
 import type { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import type { Country } from '../models/country';
+import { localizeCountry } from '../i18n/localize-country';
+import type { Country, RestCountry } from '../models/country';
 
 @Injectable({ providedIn: 'root' })
 export class CountryService {
@@ -13,8 +14,9 @@ export class CountryService {
   // eslint-disable-next-line @angular-eslint/prefer-inject -- Requisito de evaluación: inyección por constructor.
   constructor(@Inject(HttpClient) http: HttpClient) {
     this.countries$ = http
-      .get<Country[]>(`${environment.countriesApiUrl}/all`, {
-        params: { fields: 'cca3,name,flags,region,subregion,capital,population,area,languages,currencies' },
+      .get<RestCountry[]>(`${environment.countriesApiUrl}/all`, {
+        // REST Countries admite hasta diez campos. translations.spa incluye los nombres del país.
+        params: { fields: 'cca3,translations,flags,region,subregion,capital,population,area,languages,currencies' },
         timeout: 15_000,
       })
       .pipe(
@@ -22,7 +24,7 @@ export class CountryService {
           if (!Array.isArray(countries)) {
             throw new Error('REST Countries no devolvió una lista de países.');
           }
-          return countries;
+          return countries.map(localizeCountry);
         }),
         // Comparte la petición y conserva la última respuesta exitosa en memoria.
         shareReplay({ bufferSize: 1, refCount: true }),

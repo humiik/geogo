@@ -12,13 +12,13 @@ test('loads Explorar, retries a failed request and opens the other tabs', async 
     await route.fulfill({
       json: [
         {
-          cca3: 'ARG',
-          name: { common: 'Argentina', official: 'Argentine Republic' },
-          flags: { png: 'arg.png', svg: 'arg.svg' },
-          capital: ['Buenos Aires'],
+          cca3: 'MEX',
+          translations: { spa: { common: 'México', official: 'Estados Unidos Mexicanos' } },
+          flags: { png: 'mex.png', svg: 'mex.svg' },
+          capital: ['Mexico City'],
           region: 'Americas',
-          population: 47000000,
-          area: 2780400,
+          population: 129000000,
+          area: 1964375,
         },
       ],
     });
@@ -28,18 +28,20 @@ test('loads Explorar, retries a failed request and opens the other tabs', async 
   await expect(page).toHaveURL(/\/tabs\/tab1$/);
   await expect(page.getByRole('alert')).toContainText('No se pudieron cargar los países');
   await page.getByRole('button', { name: 'Reintentar' }).click();
-  const card = page.getByRole('listitem').filter({ hasText: 'Argentina' });
-  await expect(card.getByRole('heading', { name: 'Argentina' })).toBeVisible();
-  await expect(card.getByRole('img', { name: 'Bandera de Argentina' })).toBeVisible();
-  await expect(card).toContainText('Buenos Aires');
-  await expect(card).toContainText('Americas');
+  const card = page.getByRole('listitem').filter({ hasText: 'México' });
+  await expect(card.getByRole('heading', { name: 'México' })).toBeVisible();
+  await expect(card.getByRole('img', { name: 'Bandera de México' })).toBeVisible();
+  await expect(card).toContainText('Ciudad de México');
+  await expect(card).toContainText('América');
 
   const tabs = page.locator('ion-tab-button');
   await expect(tabs).toHaveCount(3);
   await tabs.filter({ hasText: 'Comparar' }).click();
   await expect(page).toHaveURL(/\/tabs\/tab2$/);
+  await expect(page.getByText('El comparador de países estará disponible en una próxima etapa.')).toBeVisible();
   await tabs.filter({ hasText: 'Desafíos' }).click();
   await expect(page).toHaveURL(/\/tabs\/tab3$/);
+  await expect(page.getByText('Los desafíos de geografía estarán disponibles en una próxima etapa.')).toBeVisible();
   await tabs.filter({ hasText: 'Explorar' }).click();
   await expect(card).toBeVisible();
   expect(attempts).toBe(2);

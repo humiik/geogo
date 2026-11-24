@@ -4,7 +4,7 @@ import type { ComponentFixture } from '@angular/core/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { environment } from '../../environments/environment';
-import type { Country } from '../models/country';
+import type { RestCountry } from '../models/country';
 import { CountryService } from '../services/country.service';
 
 import { Tab1Page } from './tab1.page';
@@ -22,23 +22,27 @@ describe('Tab1Page', () => {
     fixture.detectChanges();
   });
 
-  it('loads countries on entry and shares the response with later subscribers', () => {
+  it('carga y comparte los datos en español sin cambiar sus códigos ni cifras', () => {
     expect(component).toBeTruthy();
     const http = TestBed.inject(HttpTestingController);
     const request = http.expectOne((req) => req.method === 'GET' && req.url === `${environment.countriesApiUrl}/all`);
-    const countries: Country[] = [
+    expect(request.request.params.get('fields')?.split(',')).toContain('translations');
+    const countries: RestCountry[] = [
       {
         cca3: 'ARG',
-        name: { common: 'Argentina', official: 'Argentine Republic' },
-        flags: { png: 'arg.png', svg: 'arg.svg' },
+        translations: { spa: { common: 'Argentina', official: 'República Argentina' } },
+        flags: { png: 'arg.png', svg: 'arg.svg', alt: 'The flag of Argentina' },
         capital: ['Buenos Aires'],
         region: 'Americas',
+        subregion: 'South America',
+        languages: { spa: 'Spanish', glc: 'Galician', dzo: 'Dzongkha' },
+        currencies: { ARS: { name: 'Argentine peso', symbol: '$' } },
         population: 47000000,
         area: 2780400,
       },
       {
         cca3: 'ATA',
-        name: { common: 'Antarctica', official: 'Antarctica' },
+        translations: { spa: { common: 'Antártida' } },
         flags: { png: 'ata.png', svg: '' },
         capital: [],
         region: 'Antarctic',
@@ -54,13 +58,25 @@ describe('Tab1Page', () => {
     expect(cards).toHaveLength(2);
     expect(cards[0].textContent).toContain('Argentina');
     expect(cards[0].textContent).toContain('Buenos Aires');
-    expect(cards[0].textContent).toContain('Americas');
+    expect(cards[0].textContent).toContain('América');
     expect(cards[0].querySelector('img')?.getAttribute('alt')).toBe('Bandera de Argentina');
     expect(cards[1].textContent).toContain('Sin datos');
     expect(cards[1].querySelector('img')?.getAttribute('src')).toBe('ata.png');
     const subscriber = vi.fn();
     TestBed.inject(CountryService).countries$.subscribe(subscriber);
-    expect(subscriber).toHaveBeenCalledWith(countries);
+    expect(subscriber).toHaveBeenCalledWith([
+      expect.objectContaining({
+        cca3: 'ARG',
+        name: { common: 'Argentina', official: 'República Argentina' },
+        region: 'América',
+        subregion: 'América del Sur',
+        languages: { spa: 'español', glc: 'gallego', dzo: 'dzongkha' },
+        currencies: { ARS: { name: 'peso argentino', symbol: '$' } },
+        population: 47000000,
+        area: 2780400,
+      }),
+      expect.objectContaining({ name: { common: 'Antártida', official: 'Antártida' }, capital: [] }),
+    ]);
     http.verify();
   });
 });

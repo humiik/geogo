@@ -2,7 +2,7 @@
 <ion-card>
   <div class="flag">
     @if (item.flags.svg || item.flags.png; as flagUrl) {
-      <img [src]="flagUrl" [alt]="'Bandera de ' + item.name.common" loading="lazy" decoding="async" />
+      <img [src]="flagUrl" [alt]="item.flags.alt ?? ''" loading="lazy" decoding="async" />
     } @else {
       <span>Bandera no disponible</span>
     }
