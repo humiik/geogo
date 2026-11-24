@@ -19,5 +19,23 @@
         <dd>{{ item.region || 'Sin datos' }}</dd>
       </div>
     </dl>
+    <div class="actions">
+      <ion-button
+        fill="clear"
+        size="small"
+        (click)="details.emit(item)"
+        [attr.aria-label]="'Ver detalles de ' + item.name.common"
+      >
+        Ver detalles
+      </ion-button>
+      <ion-button
+        fill="clear"
+        size="small"
+        (click)="favoriteToggle.emit(item.cca3)"
+        [attr.aria-label]="(favorite() ? 'Quitar de favoritos ' : 'Agregar a favoritos ') + item.name.common"
+      >
+        <ion-icon slot="icon-only" [name]="favorite() ? 'heart' : 'heart-outline'" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </div>
   </ion-card-content>
 </ion-card>
