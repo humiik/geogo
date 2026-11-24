@@ -12,8 +12,8 @@
   </ion-header>
 
   @if (state() === 'loaded') {
-  <section class="catalog" aria-labelledby="catalog-title">
-    <h2 id="catalog-title">Países del mundo</h2>
+  <section class="geo-page" aria-labelledby="catalog-title">
+    <h2 id="catalog-title" class="geo-title">Países del mundo</h2>
     @if (countries().length) {
     <div class="catalog-filters">
       <ion-input
@@ -43,6 +43,27 @@
         }
       </ion-select>
       }
+      <ion-select
+        label="Ordenar por"
+        labelPlacement="stacked"
+        fill="outline"
+        cancelText="Cancelar"
+        okText="Aplicar"
+        [value]="order()"
+        (ionChange)="setOrder($event.detail.value)"
+      >
+        <ion-select-option value="name">Nombre (A–Z)</ion-select-option>
+        <ion-select-option value="population">Mayor población</ion-select-option>
+        <ion-select-option value="area">Mayor superficie</ion-select-option>
+      </ion-select>
+    </div>
+    <div class="catalog-actions">
+      <ion-toggle [checked]="favoritesOnly()" (ionChange)="favoritesOnly.set($event.detail.checked)">
+        Solo favoritos
+      </ion-toggle>
+      <ion-button fill="outline" size="small" [disabled]="!visibleCountries().length" (click)="discoverCountry()">
+        Descubrir al azar
+      </ion-button>
     </div>
     @if (visibleCountries().length) {
     <p class="catalog-count" role="status">
@@ -50,7 +71,14 @@
     </p>
     <ul class="country-grid" role="list">
       @for (country of visibleCountries(); track country.cca3) {
-      <li><app-country-card [country]="country"></app-country-card></li>
+      <li>
+        <app-country-card
+          [country]="country"
+          [favorite]="storage.favorites().has(country.cca3)"
+          (details)="selectedCountry.set($event)"
+          (favoriteToggle)="storage.toggleFavorite($event)"
+        ></app-country-card>
+      </li>
       }
     </ul>
     } @else {
@@ -78,3 +106,24 @@
   </ion-card>
   }
 </ion-content>
+
+<ion-modal
+  #detailsModal
+  [isOpen]="selectedCountry() !== null"
+  (didDismiss)="selectedCountry.set(null)"
+  aria-labelledby="country-modal-title"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title id="country-modal-title">Detalles del país</ion-title>
+        <ion-button slot="end" fill="clear" (click)="detailsModal.dismiss()">Cerrar</ion-button>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      @if (selectedCountry(); as country) {
+      <app-country-detail [country]="country"></app-country-detail>
+      }
+    </ion-content>
+  </ng-template>
+</ion-modal>
