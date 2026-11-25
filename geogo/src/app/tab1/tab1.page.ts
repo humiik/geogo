@@ -161,12 +161,8 @@ export class Tab1Page implements OnInit {
       next: (countries) => {
         this.countries.set(countries);
         this.state.set('loaded');
-        console.info('GeoGo · Países recibidos', countries);
       },
-      error: (error: unknown) => {
-        this.state.set('error');
-        console.error('GeoGo · Error al cargar países', error);
-      },
+      error: () => this.state.set('error'),
     });
   }
 }
