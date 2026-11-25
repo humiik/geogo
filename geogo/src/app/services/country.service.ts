@@ -7,7 +7,8 @@ import { environment } from '../../environments/environment';
 import { localizeCountry } from '../i18n/localize-country';
 import type { CountryCoordinates } from '../models/capital-weather';
 import { readCoordinates } from '../models/capital-weather';
-import type { Country, RestCountry } from '../models/country';
+import type { Country } from '../models/country';
+import { readRestCountry } from '../models/country';
 
 @Injectable({ providedIn: 'root' })
 export class CountryService {
@@ -17,7 +18,7 @@ export class CountryService {
   // El catálogo se carga cuando una pestaña lo solicita por primera vez.
   constructor(@Inject(HttpClient) private readonly http: HttpClient) {
     this.countries$ = http
-      .get<RestCountry[]>(`${environment.countriesApiUrl}/all`, {
+      .get<unknown>(`${environment.countriesApiUrl}/all`, {
         // REST Countries admite hasta diez campos. translations.spa incluye los nombres del país.
         params: { fields: 'cca3,translations,flags,region,subregion,capital,population,area,languages,currencies' },
         timeout: 15_000,
@@ -27,7 +28,14 @@ export class CountryService {
           if (!Array.isArray(countries)) {
             throw new Error('REST Countries no devolvió una lista de países.');
           }
-          return countries.map(localizeCountry);
+          const catalog = countries.flatMap((item: unknown) => {
+            const country = readRestCountry(item);
+            return country ? [localizeCountry(country)] : [];
+          });
+          if (countries.length && !catalog.length) {
+            throw new Error('REST Countries no devolvió países identificables.');
+          }
+          return catalog;
         }),
         // Comparte la petición y conserva la última respuesta exitosa en memoria.
         shareReplay({ bufferSize: 1, refCount: true }),
