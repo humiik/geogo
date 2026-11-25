@@ -17,7 +17,7 @@ export interface QuizQuestion {
   prompt: string;
   options: QuizOption[];
   answerId: string;
-  image?: string;
+  flag?: { primary: string; fallback?: string };
 }
 
 export interface QuizRound {
