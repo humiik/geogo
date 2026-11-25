@@ -1,5 +1,6 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, Inject, Injector, input, signal } from '@angular/core';
+import type { OnInit, Signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { IonButton, IonIcon, IonSpinner } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -137,20 +138,17 @@ function load<T>(source: Observable<T>): Observable<Load<T>> {
     }
   `,
 })
-export class CapitalWeatherComponent {
+export class CapitalWeatherComponent implements OnInit {
   readonly country = input.required<Country>();
   readonly withMap = input(false);
-  private readonly countries = inject(CountryService);
-  private readonly weatherService = inject(WeatherService);
   private readonly attempt = signal(0);
   private readonly request = computed(() => ({ code: this.country().cca3, attempt: this.attempt() }));
   protected readonly capitalLabel = computed(() =>
     this.country().capital?.length === 1 ? this.country().capital?.[0] || 'Capital registrada' : 'Capital registrada',
   );
-  protected readonly coordinates = toSignal(
-    toObservable(this.request).pipe(switchMap(({ code }) => load(this.countries.coordinates(code)))),
-    { initialValue: { status: 'loading' } as Load<CountryCoordinates> },
-  );
+  protected coordinates!: Signal<Load<CountryCoordinates>>;
+  protected weather!: Signal<Load<WeatherSnapshot>>;
+  protected clock!: Signal<string>;
   protected readonly point = computed(() => {
     const location = this.coordinates();
     return location.status === 'ready' ? (location.value.capital ?? location.value.country) : undefined;
@@ -159,34 +157,11 @@ export class CapitalWeatherComponent {
     const point = this.point();
     return point ? `${environment.mapUrl}/?mlat=${point[0]}&mlon=${point[1]}#map=10/${point[0]}/${point[1]}` : '';
   });
-  protected readonly weather = toSignal(
-    toObservable(this.coordinates).pipe(
-      switchMap((location) =>
-        location.status === 'ready' && location.value.capital
-          ? load(this.weatherService.current(location.value.capital))
-          : of({ status: 'idle' } as const),
-      ),
-    ),
-    { initialValue: { status: 'idle' } as Load<WeatherSnapshot> },
-  );
-  protected readonly clock = toSignal(
-    toObservable(this.weather).pipe(
-      switchMap((weather) => {
-        const zone = weather.status === 'ready' ? weather.value.timezone : undefined;
-        if (!zone) return of('');
-        const format = new Intl.DateTimeFormat('es-AR', {
-          timeZone: zone,
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        });
-        return timer(0, 1000).pipe(map(() => format.format(new Date())));
-      }),
-    ),
-    { initialValue: '' },
-  );
-
-  constructor() {
+  constructor(
+    @Inject(CountryService) private readonly countries: CountryService,
+    @Inject(WeatherService) private readonly weatherService: WeatherService,
+    @Inject(Injector) private readonly injector: Injector,
+  ) {
     addIcons({
       cloudOutline,
       moonOutline,
@@ -196,6 +171,40 @@ export class CapitalWeatherComponent {
       sunnyOutline,
       thunderstormOutline,
     });
+  }
+
+  ngOnInit(): void {
+    const injector = this.injector;
+    this.coordinates = toSignal(
+      toObservable(this.request, { injector }).pipe(switchMap(({ code }) => load(this.countries.coordinates(code)))),
+      { injector, initialValue: { status: 'loading' } as const },
+    );
+    this.weather = toSignal(
+      toObservable(this.coordinates, { injector }).pipe(
+        switchMap((location) =>
+          location.status === 'ready' && location.value.capital
+            ? load(this.weatherService.current(location.value.capital))
+            : of({ status: 'idle' } as const),
+        ),
+      ),
+      { injector, initialValue: { status: 'idle' } as const },
+    );
+    this.clock = toSignal(
+      toObservable(this.weather, { injector }).pipe(
+        switchMap((weather) => {
+          const zone = weather.status === 'ready' ? weather.value.timezone : undefined;
+          if (!zone) return of('');
+          const format = new Intl.DateTimeFormat('es-AR', {
+            timeZone: zone,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          });
+          return timer(0, 1000).pipe(map(() => format.format(new Date())));
+        }),
+      ),
+      { injector, initialValue: '' },
+    );
   }
 
   protected retry(): void {
