@@ -34,6 +34,11 @@ import { CountryService } from '../services/country.service';
 import { QuizService } from '../services/quiz.service';
 import { StorageService } from '../services/storage.service';
 
+interface FlagImage {
+  id: number;
+  src: string;
+}
+
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
@@ -77,6 +82,8 @@ export class Tab3Page implements OnInit {
   protected readonly selected = signal<string | null>(null);
   protected readonly score = signal(0);
   protected readonly modeError = signal(false);
+  protected readonly flagImage = signal<FlagImage | null>(null);
+  protected readonly flagStatus = signal<'loading' | 'ready' | 'error'>('loading');
   protected readonly question = computed(() => this.round()?.questions[this.index()]);
   protected readonly correctLabel = computed(() => {
     const question = this.question();
@@ -111,6 +118,30 @@ export class Tab3Page implements OnInit {
     const round = this.quiz.createRound(mode, this.countries());
     this.modeError.set(round === null);
     this.round.set(round);
+    this.retryFlag();
+  }
+
+  protected retryFlag(): void {
+    const flag = this.question()?.flag;
+    if (flag) {
+      this.showFlag(flag.primary);
+    } else {
+      this.flagImage.set(null);
+    }
+  }
+
+  protected flagLoaded(image: FlagImage): void {
+    if (image === this.flagImage()) this.flagStatus.set('ready');
+  }
+
+  protected flagFailed(image: FlagImage): void {
+    if (image !== this.flagImage()) return;
+    const fallback = this.question()?.flag?.fallback;
+    if (fallback && fallback !== image.src) {
+      this.showFlag(fallback);
+    } else {
+      this.flagStatus.set('error');
+    }
   }
 
   protected setSegment(value: unknown): void {
@@ -120,6 +151,7 @@ export class Tab3Page implements OnInit {
   protected answer(id: string): void {
     const question = this.question();
     if (!question || this.selected() !== null || !question.options.some((option) => option.id === id)) return;
+    if (question.flag && this.flagStatus() !== 'ready') return;
     this.selected.set(id);
     if (id === question.answerId) this.score.update((score) => score + 1);
     const round = this.round();
@@ -134,5 +166,11 @@ export class Tab3Page implements OnInit {
     if (this.selected() === null) return;
     this.selected.set(null);
     this.index.update((index) => index + 1);
+    this.retryFlag();
+  }
+
+  private showFlag(src: string): void {
+    this.flagStatus.set('loading');
+    this.flagImage.update((image) => ({ id: (image?.id ?? 0) + 1, src }));
   }
 }
