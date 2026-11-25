@@ -1,8 +1,8 @@
 {
   "name": "geogo",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "Camila Rodas",
+  "homepage": "https://github.com/humiik/geogo",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
