@@ -1,49 +1,129 @@
 # GeoGo
 
-GeoGo es una aplicación móvil educativa en español para explorar países, comparar sus datos geográficos y aprender con desafíos de cinco preguntas.
+GeoGo es una aplicación educativa e interactiva orientada a la exploración de países, la comparación de información geográfica y el aprendizaje mediante desafíos. Su interfaz en español combina la visualización de datos, la cartografía interactiva y la gamificación en una experiencia moderna e intuitiva.
 
-Desarrollado por [humiik](https://github.com/humiik).
+## Funcionalidades principales
 
-## Funcionalidades
+### Explorar
 
-- **Explorar.** Buscá países por nombre, combiná filtros por región y favoritos, y ordená por nombre, población o superficie. Abrí una ficha para ver la bandera y los datos del país. «Descubrir al azar» elige un país de los resultados visibles.
-- **Comparar.** Seleccioná dos países para ver sus capitales, regiones, idiomas y monedas, además de población, superficie y densidad. Las barras muestran la proporción respecto al valor mayor. El porcentaje de diferencia usa al primer país como referencia y se omite si ese valor es cero o falta.
-- **Desafíos.** Jugá con banderas, capitales, población o regiones. Cada partida tiene cinco preguntas a partir del catálogo. Una partida completada suma 10 XP por acierto. La sección Estadísticas muestra el nivel, la precisión, los récords y las insignias.
+Permite consultar un catálogo de países mediante búsquedas por nombre, filtros por región y favoritos, criterios de ordenación y visualización en formato de tarjetas o lista.
 
-Los favoritos y las partidas completadas se guardan en el almacenamiento local del navegador o WebView.
+La ficha de cada país presenta información geográfica, demográfica y cultural, complementada con un mapa interactivo, las condiciones meteorológicas actuales y la hora local de su capital, según la disponibilidad de los datos.
 
-## Tecnologías y datos
+### Comparar
 
-Ionic Angular, Angular Standalone, TypeScript, SCSS, RxJS, HttpClient y Capacitor. El catálogo consulta la instancia pública v3.1 de REST Countries. Los nombres en español y los datos geográficos se normalizan en el servicio compartido. [Fuente de datos](https://restcountries.conventus.de/)
+Facilita el análisis comparativo entre dos países mediante indicadores de población, superficie y densidad poblacional, representados a través de barras animadas, diferencias numéricas y porcentajes.
 
-## Ejecución local
+También permite contrastar información sobre capitales, idiomas, monedas, condiciones meteorológicas y horarios locales.
 
-Desde la raíz del repositorio, entrá en la carpeta de la aplicación.
+### Desafíos
+
+Ofrece cuatro modalidades de aprendizaje basadas en banderas, capitales, población y regiones. Cada partida consta de cinco preguntas y otorga 10 puntos de experiencia (XP) por cada respuesta correcta al completarse.
+
+El sistema de gamificación incorpora niveles, récords, estadísticas de rendimiento e insignias que permiten visualizar el progreso alcanzado.
+
+### Personalización y persistencia
+
+La aplicación dispone de modos claro y oscuro, animaciones, transiciones y un diseño adaptable a diferentes tamaños de pantalla.
+
+Los países favoritos, el progreso de los desafíos y las preferencias de apariencia se almacenan localmente en el dispositivo.
+
+## Tecnologías utilizadas
+
+- **Ionic Angular:** desarrollo de interfaces y navegación.
+- **Angular Standalone:** arquitectura y lógica de la aplicación.
+- **TypeScript:** desarrollo y tipado del código.
+- **SCSS:** personalización visual, estilos y animaciones.
+- **RxJS:** gestión de operaciones asíncronas.
+- **HttpClient:** consumo de servicios HTTP.
+- **Capacitor:** integración con plataformas móviles.
+- **Leaflet:** visualización de mapas interactivos.
+- **LocalStorage:** persistencia local de información.
+
+## Fuentes de datos
+
+GeoGo integra servicios externos para obtener información geográfica, meteorológica y cartográfica.
+
+- **[REST Countries v3.1](https://restcountries.conventus.de/):** información general y coordenadas de países y capitales.
+- **[Open-Meteo](https://open-meteo.com/en/docs):** condiciones meteorológicas actuales y zonas horarias.
+- **[OpenStreetMap](https://www.openstreetmap.org/):** información cartográfica para la visualización de mapas interactivos.
+
+## Instalación y ejecución
+
+### Requisitos previos
+
+- Node.js.
+- npm.
+- Git (opcional para la descarga del repositorio).
+- Ionic CLI.
+
+El proyecto fue verificado con Node.js 26 y npm 12.
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/humiik/geogo.git
+```
+
+También es posible descargar el código fuente desde GitHub, seleccionando la rama `main` y la opción **Code → Download ZIP**.
+
+### 2. Instalar las dependencias
+
+Acceder a la carpeta de la aplicación e instalar las dependencias:
 
 ```bash
 cd geogo
 npm ci
+```
+
+### 3. Instalar Ionic CLI
+
+En caso de no contar con Ionic CLI, ejecutar:
+
+```bash
+npm install -g @ionic/cli
+```
+
+### 4. Iniciar la aplicación
+
+```bash
+ionic serve
+```
+
+La aplicación estará disponible, por defecto, en [http://localhost:8100](http://localhost:8100).
+
+Como alternativa, puede ejecutarse mediante:
+
+```bash
 npm start
 ```
 
-El servidor local se abre en `http://localhost:4200`. La consulta del catálogo requiere conexión a Internet.
+En este caso, la dirección predeterminada es [http://localhost:4200](http://localhost:4200).
 
-| Comando | Resultado |
-| --- | --- |
-| `npm run build` | Genera la compilación de producción en `geogo/www/` desde la raíz del repositorio. |
-| `npm run test:unit` | Ejecuta las pruebas unitarias. |
-| `npm run test:e2e` | Ejecuta las pruebas de navegador. Si Chromium aún no está disponible, instalalo con `npx playwright install chromium`. |
+**Nota:** se requiere conexión a Internet para consultar el catálogo de países, las condiciones meteorológicas y los mapas interactivos.
 
-## Capturas
+## Capturas de pantalla
 
-Capturas de la compilación de producción en una pantalla móvil emulada, con datos de la API real.
+### Explorar
 
-| Explorar | Comparar |
-| --- | --- |
-| <img src="docs/capturas/explorar.png" alt="Catálogo filtrado por América y ordenado por población" width="270"> | <img src="docs/capturas/comparar.png" alt="Comparación de Argentina y Brasil con barras de población y superficie" width="270"> |
+Catálogo de países con indicadores estadísticos, búsqueda y filtros geográficos.
 
-| Desafíos | Estadísticas |
-| --- | --- |
-| <img src="docs/capturas/desafios.png" alt="Pregunta de la modalidad de banderas" width="270"> | <img src="docs/capturas/estadisticas.png" alt="Experiencia, precisión y récords tras completar una partida" width="270"> |
+<img src="docs/screenshots/explorar-catalogo-claro.png" alt="Pestaña Explorar" width="280">
 
-El registro de asistencia con IA está en [IA.md](IA.md).
+### Comparar
+
+Visualización comparativa de países mediante indicadores geográficos y barras estadísticas.
+
+<img src="docs/screenshots/comparar-duelo-claro.png" alt="Pestaña Comparar" width="280">
+
+### Desafíos
+
+Modalidad de aprendizaje interactivo mediante preguntas y un sistema de gamificación.
+
+<img src="docs/screenshots/desafios-pregunta-bandera.png" alt="Pestaña Desafíos" width="280">
+
+## Manual de usuario
+
+El manual proporciona una descripción visual de las principales funcionalidades de GeoGo, su navegación y sus modalidades de interacción.
+
+[Consultar manual de usuario en PDF](docs/manual-de-usuario.pdf)
