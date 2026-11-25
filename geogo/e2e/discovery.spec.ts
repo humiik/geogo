@@ -75,3 +75,24 @@ test('consulta el mapa, clima y hora al abrir la ficha y reutiliza la consulta',
   expect(coordinates).toBe(1);
   expect(weather).toBe(1);
 });
+
+test('retira el aviso del mapa cuando se descartan las teselas fallidas', async ({ page }) => {
+  await page.route(`${api}/all?**`, (route) => route.fulfill({ json: [countries[0]] }));
+  await page.route(`${api}/alpha/**`, (route) => route.fulfill({ json: { latlng: [-34, -64] } }));
+  await page.route('https://tile.openstreetmap.org/**', (route) =>
+    new URL(route.request().url()).pathname.startsWith('/10/')
+      ? route.abort()
+      : route.fulfill({
+          contentType: 'image/svg+xml',
+          body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"/>',
+        }),
+  );
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Ver detalles de País 00' }).click();
+  const modal = page.locator('ion-modal');
+  const warning = modal.getByText('Parte del mapa no está disponible.', { exact: false });
+  await expect(warning).toBeVisible();
+  await modal.getByRole('button', { name: 'Acercar' }).click();
+  await expect(modal.locator('.leaflet-tile-loaded').first()).toBeVisible();
+  await expect(warning).toBeHidden();
+});
