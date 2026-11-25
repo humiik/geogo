@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { map, shareReplay, tap } from 'rxjs';
 import type { Observable } from 'rxjs';
 
@@ -63,8 +63,9 @@ function validZone(timezone?: string): string | undefined {
 
 @Injectable({ providedIn: 'root' })
 export class WeatherService {
-  private readonly http = inject(HttpClient);
   private readonly cache = new Map<string, { expires: number; value: Observable<WeatherSnapshot> }>();
+
+  constructor(@Inject(HttpClient) private readonly http: HttpClient) {}
 
   current([latitude, longitude]: Coordinates): Observable<WeatherSnapshot> {
     const key = `${latitude},${longitude}`;
