@@ -2,6 +2,8 @@
 
 GeoGo es una aplicación educativa e interactiva orientada a la exploración de países, la comparación de información geográfica y el aprendizaje mediante desafíos. Su interfaz en español combina la visualización de datos, la cartografía interactiva y la gamificación en una experiencia moderna e intuitiva.
 
+**Responsable del proyecto:** Camila Rodas.
+
 ## Funcionalidades principales
 
 ### Explorar
