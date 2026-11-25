@@ -108,19 +108,19 @@ En este caso, la dirección predeterminada es [http://localhost:4200](http://loc
 
 Catálogo de países con indicadores estadísticos, búsqueda y filtros geográficos.
 
-<img src="docs/screenshots/explorar-catalogo-claro.png" alt="Pestaña Explorar" width="280">
+<img src="docs/screenshots/explorar.png" alt="Pestaña Explorar" width="280">
 
 ### Comparar
 
 Visualización comparativa de países mediante indicadores geográficos y barras estadísticas.
 
-<img src="docs/screenshots/comparar-duelo-claro.png" alt="Pestaña Comparar" width="280">
+<img src="docs/screenshots/comparar.png" alt="Pestaña Comparar" width="280">
 
 ### Desafíos
 
 Modalidad de aprendizaje interactivo mediante preguntas y un sistema de gamificación.
 
-<img src="docs/screenshots/desafios-pregunta-bandera.png" alt="Pestaña Desafíos" width="280">
+<img src="docs/screenshots/desafios.png" alt="Pestaña Desafíos" width="280">
 
 ## Manual de usuario
 
