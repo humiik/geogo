@@ -93,7 +93,7 @@ export class QuizService {
               '¿A qué país pertenece esta bandera?',
               countryOption(country),
               shuffle(flagged.filter((other) => other.cca3 !== country.cca3)).map(countryOption),
-              country.flags.svg || country.flags.png,
+              { primary: country.flags.svg || country.flags.png, fallback: country.flags.png || undefined },
             ),
           )
           .filter((question) => question.options.length === 4);
@@ -120,17 +120,20 @@ export class QuizService {
       case 'population': {
         const ordered = [
           ...new Map(
-            countries
-              .filter((country) => isGeographicValue(country.population))
-              .map((country) => [country.population, country]),
+            countries.flatMap((country) => {
+              const { population } = country;
+              return isGeographicValue(population) ? [[population, { population, country }] as const] : [];
+            }),
           ).values(),
         ].sort((a, b) => a.population - b.population);
-        return shuffle(ordered.slice(3)).map((country) =>
+        return shuffle(ordered.slice(3)).map(({ country, population }) =>
           this.question(
             country.cca3,
             '¿Cuál de estos países tiene más habitantes?',
             countryOption(country),
-            shuffle(ordered.filter((other) => other.population < country.population)).map(countryOption),
+            shuffle(ordered.filter((other) => other.population < population)).map((other) =>
+              countryOption(other.country),
+            ),
           ),
         );
       }
@@ -159,8 +162,8 @@ export class QuizService {
     prompt: string,
     answer: QuizOption,
     alternatives: QuizOption[],
-    image?: string,
+    flag?: QuizQuestion['flag'],
   ): QuizQuestion {
-    return { id, prompt, answerId: answer.id, options: shuffle([answer, ...alternatives.slice(0, 3)]), image };
+    return { id, prompt, answerId: answer.id, options: shuffle([answer, ...alternatives.slice(0, 3)]), flag };
   }
 }
