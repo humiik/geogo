@@ -17,13 +17,14 @@ const spanishRegions: Record<string, string> = {
 };
 
 test.beforeEach(async ({ page }) => {
+  await page.route('https://flags.example/**', (route) => route.abort());
   await page.route('https://restcountries.conventus.de/v3.1/alpha/**', (route) => route.fulfill({ json: {} }));
   await page.route('https://restcountries.conventus.de/v3.1/all?**', (route) =>
     route.fulfill({
       json: examples.map((item) => ({
         cca3: item.code,
         translations: { spa: { common: item.name } },
-        flags: { svg: '', png: '' },
+        flags: { svg: `https://flags.example/${item.code}.svg`, png: `https://flags.example/${item.code}.png` },
         capital: [item.capital],
         region: item.region,
         population: item.population,
@@ -122,4 +123,35 @@ test('completa cinco preguntas y conserva los puntos al recargar', async ({ page
   await expect(page.locator('.xp app-animated-number .geo-sr-only')).toHaveText('50');
   await expect(page.getByText('100 %', { exact: true })).toBeVisible();
   await expect(page.getByText('Sin escalas', { exact: true }).locator('..')).toContainText('Obtenida');
+});
+
+test('recupera la bandera sin avanzar ni penalizar al jugador si la imagen falla', async ({ page }) => {
+  let backupAvailable = false;
+  await page.route('https://flags.example/**', (route) => {
+    if (!backupAvailable || route.request().url().endsWith('.svg')) return route.abort();
+    return route.fulfill({
+      contentType: 'image/png',
+      body: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jFTsAAAAASUVORK5CYII=',
+        'base64',
+      ),
+    });
+  });
+
+  await page.goto('/tabs/tab3');
+  await page.getByRole('button', { name: 'Jugar: Adiviná la bandera' }).click();
+  const firstOption = page.locator('.options').getByRole('button').first();
+  await expect(page.getByRole('alert')).toHaveText('No se pudo cargar la bandera.');
+  await expect(firstOption).toBeDisabled();
+  await expect(page.getByText('Pregunta 1 de 5', { exact: true })).toBeVisible();
+
+  backupAvailable = true;
+  await page.getByRole('button', { name: 'Reintentar bandera' }).click();
+  const flag = page.getByRole('img', { name: 'Bandera de la pregunta' });
+  await expect(flag).toBeVisible();
+  await expect(flag).toHaveAttribute('src', /\.png$/);
+  await expect(firstOption).toBeEnabled();
+  await expect(page.getByText('Pregunta 1 de 5', { exact: true })).toBeVisible();
+  await firstOption.click();
+  await expect(page.getByRole('button', { name: 'Siguiente pregunta' })).toBeVisible();
 });
