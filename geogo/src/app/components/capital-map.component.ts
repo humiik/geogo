@@ -1,6 +1,6 @@
 import { Component, effect, input, signal, viewChild } from '@angular/core';
 import type { ElementRef } from '@angular/core';
-import type { Map as LeafletMap } from 'leaflet';
+import type { Map as LeafletMap, TileEvent } from 'leaflet';
 
 import { environment } from '../../environments/environment';
 import type { Coordinates } from '../models/capital-weather';
@@ -51,12 +51,21 @@ export class CapitalMapComponent {
             .setView(point, 10);
           leaflet.control.zoom({ zoomInTitle: 'Acercar', zoomOutTitle: 'Alejar' }).addTo(map);
           map.attributionControl.setPrefix(false);
+          const failedTiles = new Set<HTMLElement>();
+          const clearTileError = ({ tile }: TileEvent) => {
+            if (!destroyed && failedTiles.delete(tile)) this.unavailable.set(failedTiles.size > 0);
+          };
           leaflet
             .tileLayer(environment.mapTilesUrl, {
               maxZoom: 19,
               attribution: '© <a href="https://www.openstreetmap.org/copyright">colaboradores de OpenStreetMap</a>',
             })
-            .on('tileerror', () => this.unavailable.set(true))
+            .on('tileerror', ({ tile }) => {
+              failedTiles.add(tile);
+              this.unavailable.set(true);
+            })
+            .on('tileload', clearTileError)
+            .on('tileunload', clearTileError)
             .addTo(map);
           leaflet
             .marker(point, {
