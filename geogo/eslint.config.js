@@ -39,7 +39,9 @@ module.exports = defineConfig([
   },
   {
     files: [
+      'src/app/components/capital-weather.component.ts',
       'src/app/services/country.service.ts',
+      'src/app/services/weather.service.ts',
       'src/app/tab1/tab1.page.ts',
       'src/app/tab2/tab2.page.ts',
       'src/app/tab3/tab3.page.ts',
