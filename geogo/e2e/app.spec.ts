@@ -46,3 +46,10 @@ test('loads Explorar, retries a failed request and opens the other tabs', async 
   await expect(card).toBeVisible();
   expect(attempts).toBe(2);
 });
+
+test('recupera una dirección desconocida y abre Explorar', async ({ page }) => {
+  await page.route('https://restcountries.conventus.de/v3.1/all?**', (route) => route.fulfill({ json: [] }));
+  await page.goto('/tabs/desconocida');
+  await expect(page).toHaveURL(/\/tabs\/tab1$/);
+  await expect(page.getByRole('heading', { name: 'Países del mundo' })).toBeVisible();
+});
