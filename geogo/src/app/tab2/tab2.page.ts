@@ -79,7 +79,7 @@ export class Tab2Page implements OnInit {
     ];
   });
 
-  // eslint-disable-next-line @angular-eslint/prefer-inject -- Requisito de evaluación: inyección por constructor.
+  // El comparador toma ambos países del mismo catálogo.
   constructor(@Inject(CountryService) private readonly countryService: CountryService) {}
 
   ngOnInit(): void {

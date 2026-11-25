@@ -14,7 +14,7 @@ export class CountryService {
   private readonly positions = new Map<string, Observable<CountryCoordinates>>();
   readonly countries$: Observable<readonly Country[]>;
 
-  // eslint-disable-next-line @angular-eslint/prefer-inject -- Requisito de evaluación: inyección por constructor.
+  // El catálogo se carga cuando una pestaña lo solicita por primera vez.
   constructor(@Inject(HttpClient) private readonly http: HttpClient) {
     this.countries$ = http
       .get<RestCountry[]>(`${environment.countriesApiUrl}/all`, {

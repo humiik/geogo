@@ -114,7 +114,7 @@ export class Tab1Page implements OnInit {
   protected readonly pageCountries = computed(() => this.visibleCountries().slice(0, this.limit()));
   protected readonly hasMore = computed(() => this.visibleCountries().length > this.limit());
 
-  // eslint-disable-next-line @angular-eslint/prefer-inject -- Requisito de evaluación: inyección por constructor.
+  // Explorar usa el catálogo compartido para mostrar y filtrar países.
   constructor(@Inject(CountryService) private readonly countryService: CountryService) {}
 
   ngOnInit(): void {

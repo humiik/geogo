@@ -38,6 +38,15 @@ module.exports = defineConfig([
     },
   },
   {
+    files: [
+      'src/app/services/country.service.ts',
+      'src/app/tab1/tab1.page.ts',
+      'src/app/tab2/tab2.page.ts',
+      'src/app/tab3/tab3.page.ts',
+    ],
+    rules: { '@angular-eslint/prefer-inject': 'off' },
+  },
+  {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {},

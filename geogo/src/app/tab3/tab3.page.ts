@@ -83,7 +83,7 @@ export class Tab3Page implements OnInit {
     return question?.options.find((option) => option.id === question.answerId)?.label;
   });
 
-  // eslint-disable-next-line @angular-eslint/prefer-inject -- Requisito de evaluación: inyección por constructor.
+  // Las preguntas se generan con los países del catálogo.
   constructor(@Inject(CountryService) private readonly countryService: CountryService) {
     addIcons({ compassOutline, flagOutline, locationOutline, peopleOutline, ribbonOutline, lockClosedOutline });
   }
