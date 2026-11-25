@@ -10,7 +10,7 @@
 
 ## 2. Solicitudes y prompts principales
 
-Las solicitudes realizadas estuvieron orientadas a resolver necesidades específicas del proyecto, considerando su arquitectura, funcionalidad y experiencia de usuario.
+La solicitud principal fue desarrollar GeoGo como una aplicación educativa en español para explorar países, comparar datos y practicar geografía. Durante el desarrollo se formularon solicitudes específicas sobre la arquitectura, las funcionalidades y la experiencia de uso.
 
 ### Estructura y consumo de datos
 
@@ -40,93 +40,37 @@ Las solicitudes realizadas estuvieron orientadas a resolver necesidades específ
 
 ## 3. Ejemplos de asistencia en la generación de código
 
-La asistencia mediante inteligencia artificial se aplicó a diferentes componentes y servicios. Los siguientes fragmentos simplificados representan algunas de las soluciones técnicas trabajadas durante el desarrollo.
+### Consumo de servicios HTTP y localización
 
-### Consumo de servicios HTTP
+Codex implementó la consulta a REST Countries en `CountryService` y la transformación de los datos en `localizeCountry()`. El servicio comparte el catálogo ya localizado entre Explorar, Comparar y Desafíos. La localización utiliza los nombres en español del proveedor, un diccionario para variantes geográficas y `Intl.DisplayNames` para resolver nombres de idiomas y monedas. [Servicio de países](geogo/src/app/services/country.service.ts) · [Localización](geogo/src/app/i18n/localize-country.ts)
 
-Se trabajó en la utilización de servicios independientes para obtener información geográfica mediante HttpClient y Observable.
-
-```typescript
-@Injectable({
-  providedIn: 'root'
-})
-export class CountryService {
-  constructor(private http: HttpClient) {}
-
-  getCountries(): Observable<Country[]> {
-    return this.http.get<Country[]>(this.countriesUrl);
-  }
-}
-```
-
-Esta estructura permite separar las solicitudes HTTP de los componentes visuales y facilita la reutilización de los datos.
-
-### Cálculo de densidad poblacional
-
-Se plantearon soluciones para obtener indicadores derivados de la información geográfica, considerando valores incompletos o inválidos.
+Durante la auditoría, una respuesta con una capital en un formato inesperado provocó un error general. Codex incorporó `readRestCountry()` para validar cada registro y omitir los campos opcionales inválidos antes de traducir los datos. La prueba de regresión comprueba que el catálogo sigue disponible cuando la respuesta combina registros válidos e incompletos. [Validación del catálogo](geogo/src/app/models/country.ts) · [Prueba de regresión](geogo/src/app/tab1/tab1.page.spec.ts)
 
 ```typescript
-const density = area > 0
-  ? population / area
-  : 0;
+const catalog = countries.flatMap((item: unknown) => {
+  const country = readRestCountry(item);
+  return country ? [localizeCountry(country)] : [];
+});
 ```
 
-Este cálculo permite incorporar información adicional en las fichas de países y en la sección de comparación.
+### Cálculo de indicadores demográficos
 
-### Animaciones y efectos visuales
+Codex centralizó el cálculo de densidad y diferencias en `country-metrics.ts`. La densidad requiere una superficie mayor que cero. La diferencia porcentual usa el primer país como referencia y queda sin valor cuando faltan datos o la referencia es cero. Así se evita mostrar un porcentaje que no se puede calcular. [Cálculo de indicadores](geogo/src/app/models/country-metrics.ts)
 
-Se solicitaron propuestas de animaciones mediante SCSS para mejorar las transiciones y la presentación de los elementos.
-
-```scss
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.country-card {
-  animation: fadeIn 0.4s ease-out;
-}
+```typescript
+const percent = difference !== null && first !== null && first > 0 ? (difference / first) * 100 : null;
 ```
 
-El uso de animaciones nativas de CSS permite mejorar la experiencia visual sin depender de librerías adicionales.
+### Generación de preguntas y registro del progreso
 
-## 4. Adaptaciones y mejoras del proyecto
+Codex implementó la generación de preguntas a partir del catálogo de países y el registro de partidas completadas. El generador considera las capitales múltiples y evita que una respuesta válida aparezca como distractor. Cada partida se registra con un identificador único para evitar que se contabilice dos veces. [Generación de preguntas](geogo/src/app/services/quiz.service.ts) · [Registro de partidas](geogo/src/app/services/storage.service.ts)
 
-Las propuestas y fragmentos de código obtenidos mediante inteligencia artificial estuvieron sujetos a revisión y adaptación según los requerimientos de GeoGo.
+## 4. Adaptaciones y correcciones del proyecto
 
-Entre las decisiones y ajustes definidos durante el desarrollo se encuentran:
-
-- Organización de las funcionalidades en tres pestañas principales.
-- Personalización de la identidad visual y la paleta de colores.
-- Centralización de las traducciones al español.
-- Simplificación de las integraciones cartográficas y meteorológicas.
-- Optimización de las consultas a servicios externos.
-- Conservación de favoritos, preferencias y progreso mediante almacenamiento local.
-- Incorporación de animaciones ligeras y componentes reutilizables.
-- Exclusión de dependencias que aumentaran innecesariamente la complejidad del proyecto.
-
-La selección de funcionalidades, las decisiones de diseño y la definición del alcance estuvieron guiadas por los requerimientos establecidos por el desarrollador.
+- **Clima y hora local.** Se trasladó la inyección de los servicios al constructor y el inicio de las consultas a `ngOnInit`. La carga sigue realizándose al abrir una ficha o comparar dos países. [Panel de clima](geogo/src/app/components/capital-weather.component.ts)
+- **Imágenes de los desafíos.** Si falla la bandera SVG, el juego intenta cargar el PNG. Si tampoco está disponible, permite reintentar y conserva la pregunta y el puntaje. [Prueba de recuperación de banderas](geogo/e2e/remaining-features.spec.ts)
+- **Navegación y mapa.** Se añadió una redirección a Explorar para direcciones desconocidas y se corrigió el aviso del mapa para que desaparezca cuando se descartan las teselas fallidas. [Rutas](geogo/src/app/tabs/tabs.routes.ts) · [Componente del mapa](geogo/src/app/components/capital-map.component.ts)
 
 ## 5. Verificación y control de calidad
 
-También se utilizó asistencia para identificar posibles errores, revisar la estructura del código y establecer criterios de validación.
-
-La revisión contempló los siguientes aspectos:
-
-- Funcionamiento de las tres pestañas.
-- Consumo de servicios externos.
-- Manejo de errores y datos incompletos.
-- Persistencia de información mediante LocalStorage.
-- Compatibilidad con dispositivos móviles.
-- Rendimiento de las animaciones.
-- Compilación y ejecución de pruebas funcionales.
-
-Las soluciones fueron evaluadas considerando su utilidad, compatibilidad y adecuación a los objetivos del proyecto.
-
+Las correcciones se comprobaron con `npm run build`, `npm run lint` y `npm test`. Pasaron 9 pruebas unitarias y 12 pruebas de navegador. También se verificaron el catálogo, el mapa y el clima, la comparación de países y el inicio de los desafíos con datos de los servicios externos.
