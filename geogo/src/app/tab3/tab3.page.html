@@ -1,0 +1,160 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      <span class="geo-wordmark">GeoGo</span>
+      <span class="geo-toolbar-label">Desafíos</span>
+    </ion-title>
+    <app-theme-toggle slot="end"></app-theme-toggle>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Desafíos</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <section class="geo-page geo-quiz" aria-labelledby="quiz-title">
+    <h2 id="quiz-title" class="geo-title">Desafíos de geografía</h2>
+    <ion-segment [value]="segment()" (ionChange)="setSegment($event.detail.value)" aria-label="Secciones de Desafíos">
+      <ion-segment-button value="games"><ion-label>Juegos</ion-label></ion-segment-button>
+      <ion-segment-button value="stats"><ion-label>Estadísticas</ion-label></ion-segment-button>
+    </ion-segment>
+    @if (segment() === 'stats') { @let player = progress();
+    <section class="stats" aria-label="Estadísticas">
+      <div class="geo-panel">
+        <h3>{{ player.level.name }}</h3>
+        <p class="xp"><app-animated-number [value]="player.xp"></app-animated-number> XP</p>
+        <ion-progress-bar
+          [value]="player.levelProgress"
+          aria-label="Progreso hacia el siguiente nivel"
+        ></ion-progress-bar>
+        @if (player.nextLevel; as next) {
+        <p>Faltan {{ next.xp - player.xp }} XP para {{ next.name }}.</p>
+        } @else {
+        <p>Alcanzaste el nivel máximo.</p>
+        }
+        <dl>
+          <div>
+            <dt>Partidas</dt>
+            <dd><app-animated-number [value]="player.games"></app-animated-number></dd>
+          </div>
+          <div>
+            <dt>Aciertos</dt>
+            <dd><app-animated-number [value]="player.correct"></app-animated-number></dd>
+          </div>
+          <div>
+            <dt>Precisión</dt>
+            <dd>{{ player.accuracy }} %</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="geo-panel">
+        <h3>Récords</h3>
+        <dl>
+          @for (mode of modes; track mode.id) {
+          <div>
+            <dt>{{ mode.title }}</dt>
+            <dd>
+              {{ player.records[mode.id] === null ? 'Sin partidas' : player.records[mode.id] + '/' + questionCount }}
+            </dd>
+          </div>
+          }
+        </dl>
+      </div>
+      <div class="geo-panel">
+        <h3>Insignias</h3>
+        <ul>
+          @for (badge of player.badges; track badge.name) {
+          <li class="badge" [class.earned]="badge.earned">
+            <ion-icon [name]="badge.earned ? 'ribbon-outline' : 'lock-closed-outline'" aria-hidden="true"></ion-icon>
+            <strong>{{ badge.name }}</strong> · {{ badge.earned ? 'Obtenida' : 'Pendiente' }}<br />{{ badge.description
+            }}
+          </li>
+          }
+        </ul>
+      </div>
+    </section>
+    } @else if (state() === 'loading') {
+    <div class="geo-status" role="status"><ion-spinner aria-hidden="true"></ion-spinner> Cargando países…</div>
+    } @else if (state() === 'error') {
+    <p role="alert">No se pudieron cargar los países.</p>
+    <ion-button (click)="loadCountries()">Reintentar</ion-button>
+    } @else if (round(); as game) { @if (question(); as current) {
+    <div class="geo-panel game question" [class.even]="index() % 2 === 0">
+      <div class="game-progress">
+        <span>Pregunta {{ index() + 1 }} de {{ questionCount }}</span>
+        <span>Aciertos <app-animated-number [value]="score()"></app-animated-number></span>
+      </div>
+      <ion-progress-bar
+        [value]="(index() + (selected() === null ? 0 : 1)) / questionCount"
+        aria-label="Progreso de la partida"
+      ></ion-progress-bar>
+      <h3 aria-live="polite">{{ current.prompt }}</h3>
+      @if (flagImage(); as image) { @for (source of [image]; track source.id) {
+      <img
+        class="quiz-flag"
+        [hidden]="flagStatus() !== 'ready'"
+        [src]="source.src"
+        alt="Bandera de la pregunta"
+        (load)="flagLoaded(source)"
+        (error)="flagFailed(source)"
+      />
+      } @if (flagStatus() === 'loading') {
+      <p role="status">Cargando bandera…</p>
+      } @else if (flagStatus() === 'error') {
+      <p role="alert">No se pudo cargar la bandera.</p>
+      <ion-button fill="clear" (click)="retryFlag()">Reintentar bandera</ion-button>
+      } }
+      <div class="options">
+        @for (option of current.options; track option.id) {
+        <ion-button
+          expand="block"
+          [fill]="selected() !== null && (option.id === current.answerId || option.id === selected()) ? 'solid' : 'outline'"
+          [color]="selected() === null ? 'primary' : option.id === current.answerId ? 'success' : option.id === selected() ? 'danger' : 'medium'"
+          [disabled]="selected() !== null || (flagImage() !== null && flagStatus() !== 'ready')"
+          (click)="answer(option.id)"
+          >{{ option.label }}</ion-button
+        >
+        }
+      </div>
+      @if (selected() !== null) {
+      <p class="feedback" [class.correct]="selected() === current.answerId" role="status">
+        {{ selected() === current.answerId ? '¡Correcto!' : 'Respuesta correcta: ' + correctLabel() }}
+      </p>
+      <ion-button expand="block" (click)="next()"
+        >{{ index() + 1 === questionCount ? 'Ver resultado' : 'Siguiente pregunta' }}</ion-button
+      >
+      }
+      <ion-button fill="clear" (click)="round.set(null)">Salir de la partida</ion-button>
+    </div>
+    } @else {
+    <div class="geo-panel game result" [class.celebrate]="score() === questionCount || levelUp()">
+      <h3>Partida completada</h3>
+      <p role="status">{{ score() }} de {{ questionCount }} respuestas correctas</p>
+      <p class="xp-reward">+{{ score() * xpPerAnswer }} XP</p>
+      @if (levelUp()) {
+      <p role="status">Subiste a {{ progress().level.name }}.</p>
+      } @if (score() === questionCount) {
+      <p>¡Partida perfecta!</p>
+      }
+      <ion-button (click)="play(game.mode)">Volver a jugar</ion-button>
+      <ion-button fill="clear" (click)="round.set(null)">Elegir otro desafío</ion-button>
+    </div>
+    } } @else { @if (modeError()) {
+    <p role="alert">No hay suficientes datos para preparar cinco preguntas de esta modalidad.</p>
+    }
+    <div class="modes">
+      @for (mode of modes; track mode.id) {
+      <article class="geo-panel mode-card" [attr.data-mode]="mode.id">
+        <ion-icon [name]="modeIcons[mode.id]" aria-hidden="true"></ion-icon>
+        <h3>{{ mode.title }}</h3>
+        <p>{{ mode.description }}</p>
+        <ion-button fill="outline" (click)="play(mode.id)" [attr.aria-label]="'Jugar: ' + mode.title">Jugar</ion-button>
+      </article>
+      }
+    </div>
+    }
+  </section>
+</ion-content>

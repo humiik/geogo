@@ -1,0 +1,42 @@
+article {
+  max-width: 38rem;
+  margin: auto;
+  padding: 1.25rem;
+}
+
+img {
+  display: block;
+  width: min(100%, 19rem);
+  height: 10rem;
+  margin: 0 auto 1rem;
+  object-fit: contain;
+}
+
+h2, p, dl, dd {
+  margin: 0;
+}
+
+p {
+  margin: 0.25rem 0 1rem;
+}
+
+dl div {
+  display: grid;
+  grid-template-columns: minmax(5rem, 1fr) minmax(0, 2fr);
+  gap: 0.5rem;
+  padding: 0.65rem 0;
+  border-block-end: 1px solid var(--geo-border);
+}
+
+dt {
+  font-weight: 600;
+}
+
+dd {
+  overflow-wrap: anywhere;
+}
+
+app-capital-weather {
+  display: block;
+  margin-block-start: 1.2rem;
+}
