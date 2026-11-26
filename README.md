@@ -105,6 +105,13 @@ En este caso, la dirección predeterminada es [http://localhost:4200](http://loc
 
 **Nota:** se requiere conexión a Internet para consultar el catálogo de países, las condiciones meteorológicas y los mapas interactivos.
 
+### Descarga e instalación en Android
+
+El APK de GeoGo v1.0.0 está disponible en GitHub Releases. Para instalar la aplicación, descarga el archivo `apk-debug.apk` y ábrelo en un dispositivo Android.
+
+- [Descargar el APK de GeoGo v1.0.0](https://github.com/humiik/geogo/releases/download/v1.0.0/apk-debug.apk)
+- [Consultar la publicación oficial de GeoGo v1.0.0](https://github.com/humiik/geogo/releases/tag/v1.0.0)
+
 ## Estructura del proyecto
 
 ```text
