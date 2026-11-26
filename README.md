@@ -39,6 +39,7 @@ Los países favoritos, el progreso de los desafíos y las preferencias de aparie
 - **RxJS:** gestión de operaciones asíncronas.
 - **HttpClient:** consumo de servicios HTTP.
 - **Capacitor:** integración con plataformas móviles.
+- **Capacitor Android 8.6.2:** plataforma nativa para compilar y ejecutar GeoGo en Android.
 - **Leaflet:** visualización de mapas interactivos.
 - **LocalStorage:** persistencia local de información.
 
@@ -103,6 +104,48 @@ npm start
 En este caso, la dirección predeterminada es [http://localhost:4200](http://localhost:4200).
 
 **Nota:** se requiere conexión a Internet para consultar el catálogo de países, las condiciones meteorológicas y los mapas interactivos.
+
+## Estructura del proyecto
+
+```text
+.
+├── docs/                    Capturas y manual de usuario
+└── geogo/                   Aplicación Ionic y Angular
+    ├── src/                 Código fuente y recursos web
+    ├── android/             Proyecto nativo de Capacitor para Android
+    └── capacitor.config.ts  Configuración de Capacitor
+```
+
+La carpeta `geogo/android/` contiene el manifiesto, los recursos nativos, los archivos de configuración de Gradle y su wrapper. La compilación genera el APK dentro de esa carpeta.
+
+## Compilación para Android
+
+### Entorno utilizado
+
+- Android SDK 36 (API 36), instalado desde el SDK Manager.
+- JDK 22, seleccionado para la ejecución de Gradle.
+- Gradle 8.14.3, gestionado por el wrapper incluido en el proyecto.
+- Android Studio Rabbit 2 (2026.2.2). [Notas de Android Studio](https://developer.android.com/studio/releases/fixed-bugs/studio/2026.2.2.html)
+
+### Compilar, sincronizar y generar el APK
+
+Con las dependencias instaladas mediante `npm ci`, ejecutar estos comandos desde la carpeta interna `geogo/`, donde se encuentran `package.json` y `capacitor.config.ts`.
+
+```bash
+npm run build
+npx cap sync android
+```
+
+Para abrir el proyecto nativo en Android Studio se puede utilizar `npx cap open android`. [Documentación de Capacitor Android](https://capacitorjs.com/docs/android)
+
+En Windows, generar el APK de depuración con Gradle:
+
+```powershell
+cd android
+.\gradlew.bat :app:assembleDebug
+```
+
+En macOS o Linux, ejecutar `sh ./gradlew :app:assembleDebug` desde `android/`. Gradle escribe el resultado en `geogo/android/app/build/outputs/apk/debug/app-debug.apk`, tomando como referencia la raíz del repositorio.
 
 ## Capturas de pantalla
 

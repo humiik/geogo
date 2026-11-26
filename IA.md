@@ -6,7 +6,7 @@
 |---|---|
 | OpenAI Codex | Asistencia en la implementación de funcionalidades, generación de código, integración de servicios y corrección de errores. |
 | Claude | Apoyo en el análisis de alternativas, revisión de soluciones y recomendaciones de desarrollo. |
-| ChatGPT | Planificación del proyecto, definición de requerimientos, elaboración de prompts y propuestas de diseño. |
+| ChatGPT | Planificación del proyecto, definición de requerimientos, elaboración de prompts, propuestas de diseño y asistencia para configurar y compilar la versión Android. |
 
 ## 2. Solicitudes y prompts principales
 
@@ -37,6 +37,10 @@ La solicitud principal fue desarrollar GeoGo como una aplicación educativa en e
 ### Integración de servicios externos
 
 > Integra mapas interactivos mediante Leaflet y OpenStreetMap. Utiliza Open-Meteo para consultar las condiciones meteorológicas actuales y la zona horaria de las capitales únicamente cuando sea necesario.
+
+### Integración de Android
+
+Se solicitó asistencia a ChatGPT para incorporar Capacitor Android a GeoGo, preparar el entorno de compilación y generar un APK de depuración que pudiera probarse en un dispositivo físico.
 
 ## 3. Ejemplos de asistencia en la generación de código
 
@@ -71,6 +75,14 @@ Codex implementó la generación de preguntas a partir del catálogo de países 
 - **Imágenes de los desafíos.** Si falla la bandera SVG, el juego intenta cargar el PNG. Si tampoco está disponible, permite reintentar y conserva la pregunta y el puntaje. [Prueba de recuperación de banderas](geogo/e2e/remaining-features.spec.ts)
 - **Navegación y mapa.** Se añadió una redirección a Explorar para direcciones desconocidas y se corrigió el aviso del mapa para que desaparezca cuando se descartan las teselas fallidas. [Rutas](geogo/src/app/tabs/tabs.routes.ts) · [Componente del mapa](geogo/src/app/components/capital-map.component.ts)
 
+### Configuración y compilación de Android
+
+ChatGPT orientó la integración de Capacitor Android 8.6.2 y el uso de Android Studio Rabbit 2. La asistencia se utilizó para diagnosticar incompatibilidades entre Java y Gradle, comprobar el JDK que ejecutaba el wrapper y configurar el entorno con JDK 22 y Gradle 8.14.3. También ayudó a instalar y seleccionar Android SDK 36 y a comprobar que Gradle pudiera localizar el SDK en el equipo. [Configuración del SDK](geogo/android/variables.gradle) · [Gradle Wrapper](geogo/android/gradle/wrapper/gradle-wrapper.properties)
+
+Para generar el APK, ChatGPT orientó la secuencia de compilación de la aplicación web con `npm run build`, sincronización del proyecto nativo con `npx cap sync android` y compilación de la variante de depuración mediante la tarea `:app:assembleDebug`. [Guía de compilación](README.md#compilación-para-android)
+
 ## 5. Verificación y control de calidad
 
 Las correcciones se comprobaron con `npm run build`, `npm run lint` y `npm test`. Pasaron 9 pruebas unitarias y 12 pruebas de navegador. También se verificaron el catálogo, el mapa y el clima, la comparación de países y el inicio de los desafíos con datos de los servicios externos.
+
+La integración nativa se comprobó generando el APK de depuración y verificando el funcionamiento de GeoGo en un dispositivo Android físico.
