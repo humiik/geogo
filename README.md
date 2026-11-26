@@ -62,17 +62,18 @@ GeoGo integra servicios externos para obtener información geográfica, meteorol
 
 El proyecto fue verificado con Node.js 26 y npm 12.
 
-### 1. Clonar el repositorio
+### 1. Obtener el código fuente
 
 ```bash
 git clone https://github.com/humiik/geogo.git
+cd geogo
 ```
 
-También es posible descargar el código fuente desde GitHub, seleccionando la rama `main` y la opción **Code → Download ZIP**.
+También es posible descargar el código fuente desde GitHub, seleccionando la rama `main` y la opción **Code → Download ZIP**. Extraer el archivo y abrir una terminal en la raíz del repositorio extraído, donde se encuentra este README.
 
 ### 2. Instalar las dependencias
 
-Acceder a la carpeta de la aplicación e instalar las dependencias:
+Desde la raíz del repositorio, acceder a la carpeta interna `geogo/`, donde se encuentra `package.json`, e instalar las dependencias:
 
 ```bash
 cd geogo
