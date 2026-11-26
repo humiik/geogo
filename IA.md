@@ -86,3 +86,5 @@ Para generar el APK, ChatGPT orientó la secuencia de compilación de la aplicac
 Las correcciones se comprobaron con `npm run build`, `npm run lint` y `npm test`. Pasaron 9 pruebas unitarias y 12 pruebas de navegador. También se verificaron el catálogo, el mapa y el clima, la comparación de países y el inicio de los desafíos con datos de los servicios externos.
 
 La integración nativa se comprobó generando el APK de depuración y verificando el funcionamiento de GeoGo en un dispositivo Android físico.
+
+Para la publicación, la asistencia con IA se utilizó para revisar el APK generado y comprobar su disponibilidad en GitHub Releases. Se verificó que GeoGo v1.0.0 se publicó desde la rama `main` y que el archivo adjunto `apk-debug.apk` se puede descargar desde el enlace público. 
